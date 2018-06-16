@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+#
+# Grab our Tweets from the database and print them to standard output.
+#
+# Vim: :set softtabstop=0 noexpandtab tabstop=8
+
+import argparse
+import json
+import logging as logger
+import logging.config
+import socket
+import sqlite3
+import sys
+import time
+
+sys.path.append("lib")
+import db
+
+
+#
+# Set up the logger
+#
+logging.config.fileConfig("logging_config.ini", disable_existing_loggers = True)
+
+#
+# Parse our arguments
+#
+parser = argparse.ArgumentParser(description = "Analyze crawled text")
+parser.add_argument("-n", "--num", type = int, help = "How many tweets to export? (Defaut: 5)", default = 5)
+parser.add_argument("--force", action = "store_true", help = "Force tweets to be exported even if they already were.")
+parser.add_argument("--loop", type = int, help = "Loop after sleeping for N seconds")
+args = parser.parse_args()
+
+
+#
+# Turns a tweet into a string suitable for passing into Splunk
+#
+def getTweetString(tweet):
+
+	retval = tweet["date"]
+	retval += " username=\"%s\"" % tweet["username"]
+	retval += " tweet_id=\"%d\"" % tweet["tweet_id"]
+	retval += " profile_image=\"%s\"" % tweet["profile_image"]
+	retval += " url=\"%s\"" % tweet["url"]
+
+	#
+	# Replace newlines with spaces, Splunk strongly prefers to have one event per line
+	#
+	tweet_string = tweet["tweet"].replace("\n", " ").replace("\r", " ")
+	retval += " tweet=\"%s\"" % tweet_string
+	retval += " sentiment=\"%s\"" % tweet["sentiment"]
+
+	if tweet["score"]:
+		score = json.loads(tweet["score"])
+		retval += " score_mixed=\"%.20f\"" % score["Mixed"]
+		retval += " score_negative=\"%.20f\"" % score["Negative"]
+		retval += " score_positive=\"%.20f\"" % score["Positive"]
+		retval += " score_neutral=\"%.20f\"" % score["Neutral"]
+
+	return(retval)
+
+
+#
+# Our main entry point
+#
+def main(args):
+
+	#
+	# Set the database to return associative arrays
+	#
+	sql = db.db()
+	sql.conn.row_factory = sqlite3.Row
+
+	#
+	# Grab our tweets, turn them into strings, and send them off to Splunk!
+	#
+	exported = "exported = ''"
+	if args.force:
+		exported = "exported IS NOT NULL"
+        
+
+	query = ("SELECT rowid, * FROM tweets "
+		"WHERE %s AND sentiment != '' "
+		"ORDER BY tweet_id "
+		"LIMIT %d" % (exported, args.num)
+                )
+	results = sql.execute(query)
+
+	query_update = "UPDATE tweets SET exported=1 WHERE rowid=?"
+
+	count = 0
+	for row in results:
+		splunk_string = getTweetString(row)
+		print(splunk_string)
+		count += 1
+		sql.execute(query_update, [ row["rowid"] ])
+
+	logger.info("ok=1 tweets_export_num=%d tweets_export_requested=%d" % (count, args.num) )
+
+	#
+	# Turns out that when this is run as a service in systemd with output redirected, 
+	# it is not flushed regularly, and stopping the service loses the output.  Awesome!
+	#
+	sys.stdout.flush()
+
+
+if not args.loop:
+	main(args)
+else:
+	while True:
+		main(args)
+		logger.info("Sleeping for %d seconds..." % args.loop)
+		time.sleep(args.loop)
+		logger.info("Waking up!")
+
+
+
+
+
+

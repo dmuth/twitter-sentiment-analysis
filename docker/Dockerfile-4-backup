@@ -1,0 +1,19 @@
+
+FROM alpine
+
+WORKDIR /mnt
+
+RUN apk update
+RUN apk add bash
+RUN apk add python3
+RUN pip3 install awscli
+
+#
+# Copy in our AWS credentials
+#
+RUN mkdir /root/.aws/
+COPY aws-credentials.txt /root/.aws/credentials
+
+CMD /mnt/docker/entrypoint-4-backup-tweets.sh
+
+

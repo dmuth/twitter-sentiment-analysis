@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# Script to run our tweet analysis script.
+#
+
+
+NUM=${NUM:=5}
+ARGS=""
+
+if test "$LOOP_SECONDS"
+then
+	ARGS="${ARGS} --loop ${LOOP_SECONDS}"
+fi
+
+if test "$FORCE"
+then
+	ARGS="${ARGS} --force"
+fi
+
+OUTPUT=logs/3-tweet-export.log
+STDERR=logs/3-tweet-export.stderr
+
+
+echo "# "
+echo "# Starting Tweet analysis script"
+echo "# "
+echo "# Available env vars: NUM, LOOP_SECONDS, FORCE"
+echo "# "
+echo "# Number of tweets to export per loop: ${NUM}"
+echo "# "
+
+if test "$LOOP_SECONDS"
+then
+	echo "# Sleeping between loops for this many seconds: ${LOOP_SECONDS}"
+	echo "# "
+else
+	echo "# Only running once, not looping. "
+	echo "# "
+fi
+
+if test "$FORCE"
+then
+	echo "# We are forcing exports of all tweets"
+	echo "# "
+fi
+
+if test "${ARGS}"
+then
+	echo "# Args: ${ARGS}"
+	echo "# "
+fi
+
+echo "# "
+echo "# "
+echo "# Output will be written to: ${OUTPUT}"
+echo "# Stderr will be written to: ${STDERR}"
+echo "# "
+
+
+./3-export-analyzed-tweets  --num ${NUM} ${ARGS} >> ${OUTPUT} 2>> ${STDERR}
+
+

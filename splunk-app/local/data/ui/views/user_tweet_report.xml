@@ -1,0 +1,128 @@
+<form script="customview.js">
+  <label>User Tweet Report</label>
+  <search>
+    <query>index=main sourcetype="3-tweets-export-log" username=$username$ profile_image=* | head 1</query>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+    <!-- Use the following search events to access job properties, and set tokens that can be accessible throughout the page -->
+    <!-- Progress event has access to job properties only (not first result row) -->
+    <progress>
+      <set token="result_username">@$result.username$</set>
+      <set token="result_profile_image">$result.profile_image$</set>
+    </progress>
+    <cancelled>
+      <set token="result_username"></set>
+      <set token="result_image"></set>
+    </cancelled>
+  </search>
+  <fieldset submitButton="true">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="username" searchWhenChanged="true">
+      <label>Tweet from User</label>
+    </input>
+    <input type="dropdown" token="high" searchWhenChanged="true">
+      <label>High-Confidence Tweets Only</label>
+      <choice value="">No</choice>
+      <choice value="| where confidence &gt;= 60">Yes</choice>
+      <default></default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Total Tweets</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" username=$username$ |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | stats count|</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">200</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Tweets</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Positive Tweets</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" username=$username$ sentiment=POSITIVE |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | stats count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">200</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Tweets</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Negative Tweets</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" username=$username$ sentiment=NEGATIVE |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | stats count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">200</option>
+        <option name="rangeColors">["0xdc4e41","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Tweets</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Twitter User</title>
+      <html>
+          
+          <img src="$result_profile_image$" height="150" width="150"/>
+          <br/>
+          <br/>
+          <text style="letter-spacing: normal; font-weight: bold; fill: rgb(51, 51, 51); opacity: 1; font-size: 24px; vertical-align: top; ">
+          $result_username$
+          </text>
+           
+          
+        </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Tweets</title>
+      <table>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" username=$username$ |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  $high$ | eval confidence_text = confidence . "%" |table _time, sentiment, confidence_text, tweet |rename tweet AS Tweet, sentiment AS Sentiment, confidence_text AS Confidence</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <format type="color" field="sentiment">
+          <colorPalette type="map">{"POSITIVE":#53A051,"NEGATIVE":#DC4E41,"NEUTRAL":#708794,"MIXED":#F8BE34}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Visualized Tweets</title>
+      <html>
+      <div id="user-tweets"/>
+    </html>
+    </panel>
+  </row>
+</form>

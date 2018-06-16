@@ -1,0 +1,159 @@
+<form>
+  <label>Sentiment for Twitter Mentions of "Anthrocon"</label>
+  <description>RTs are excluded</description>
+  <fieldset submitButton="false">
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Span</label>
+      <choice value="1m">1  Min</choice>
+      <choice value="5m">5 Min</choice>
+      <choice value="15m">15 Min</choice>
+      <choice value="1h">1 Hour</choice>
+      <choice value="3h">3 Hours</choice>
+      <choice value="6h">6 Hours</choice>
+      <choice value="1d">1 Day</choice>
+      <default>1h</default>
+    </input>
+    <input type="dropdown" token="tweet_contains" searchWhenChanged="true">
+      <label>Tweet Contains</label>
+      <choice value="*">ANY</choice>
+      <choice value="alley">Alley</choice>
+      <choice value="art show">Art Show</choice>
+      <choice value="dealer">Dealer</choice>
+      <choice value="parade">Parade</choice>
+      <choice value="security">Security</choice>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="high" searchWhenChanged="true">
+      <label>High-Confidence Tweets Only</label>
+      <choice value="">No</choice>
+      <choice value="| where confidence &gt;= 60">Yes</choice>
+      <default></default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" tweet=*$tweet_contains$* | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE", "MIXED")  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | timechart span=$span$ count(sentiment)  by sentiment</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">zero</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Total Tweets</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" sentiment=* tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Tweets</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Positive Tweets</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" sentiment=POSITIVE tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[99999]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Tweets</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Negative Tweets</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" sentiment=NEGATIVE tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xdc4e41","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Tweets</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Recent Positive Tweets</title>
+      <table>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" sentiment=POSITIVE tweet=*$tweet_contains$*  | reltime  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | head 10 | table reltime username confidence tweet | rename Reltime AS "Time Ago", username AS Username, confidence AS Confidence, tweet AS Tweet</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Recent Negative Tweets</title>
+      <table>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" sentiment=NEGATIVE tweet=*$tweet_contains$* |reltime  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | head 10 | table reltime username confidence tweet | rename Reltime AS "Time Ago", username AS Username, confidence AS Confidence, tweet AS Tweet</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

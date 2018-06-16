@@ -1,0 +1,268 @@
+<form>
+  <label>Sentiment Breakdown by Department</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Span</label>
+      <choice value="1m">1  Min</choice>
+      <choice value="5m">5 Min</choice>
+      <choice value="15m">15 Min</choice>
+      <choice value="1h">1 Hour</choice>
+      <choice value="3h">3 Hours</choice>
+      <choice value="6h">6 Hours</choice>
+      <choice value="1d">1 Day</choice>
+      <default>1h</default>
+    </input>
+    <input type="dropdown" token="tweet_contains" searchWhenChanged="true">
+      <label>Tweet Contains</label>
+      <choice value="*">ANY</choice>
+      <choice value="alley">Alley</choice>
+      <choice value="art show">Art Show</choice>
+      <choice value="dealer">Dealer</choice>
+      <choice value="hotel">Hotel</choice>
+      <choice value="parade">Parade</choice>
+      <choice value="security">Security</choice>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="high" searchWhenChanged="true">
+      <label>High-Confidence Tweets Only</label>
+      <choice value="">No</choice>
+      <choice value="| where confidence &gt;= 60">Yes</choice>
+      <default></default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Sentiment Over Time by Percentage /w/ Tweet Volume Overlaid</title>
+      <chart>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" tweet="*$tweet_contains$*" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE")  | timechart span=$span$ count(sentiment)  by sentiment | addtotals |rename Total as "Total Tweets"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">1</option>
+        <option name="charting.axisY2.minimumNumber">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">zero</option>
+        <option name="charting.chart.overlayFields">"Total Tweets"</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked100</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="charting.seriesColors">[0xFF4444, 0x666666, 0x22ff22, 0x0000dd]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Positive Sentiment</title>
+      <table>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
+| where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE") 
+| search sentiment=POSITIVE
+| eval keyword=case(
+
+  match(lower(tweet), "alley"), "Alley", 
+  match(lower(tweet), "art show"), "Art Show", 
+  match(lower(tweet), "artshow"), "Art Show", 
+  match(lower(tweet), "dance"), "Dance", 
+  match(lower(tweet), "dances"), "Dance", 
+  match(lower(tweet), "dj"), "Dance: DJ", 
+  match(lower(tweet), "dealer"), "Dealer", 
+  match(lower(tweet), "elevator"), "Elevator", 
+  match(lower(tweet), "line"), "Line", 
+  match(lower(tweet), "security"), "Security", 
+  match(lower(tweet), "parade"), "Parade", 
+  match(lower(tweet), "alkali"), "Performer: Alkali",
+  match(lower(tweet), "boozy"), "Performer: Boozy",
+  match(lower(tweet), "kage"), "Performer: Uncle Kage",
+  match(lower(tweet), "uncle kage"), "Performer: Uncle Kage",
+  match(lower(tweet), "unclekage"), "Performer: Uncle Kage",
+  match(lower(tweet), "pittsburgh"), "Pittsburgh", 
+  match(lower(tweet), "programming"), "Programming", 
+  match(lower(tweet), "registration"), "Registration", 
+  match(lower(tweet), "shuttle"), "shuttle", 
+
+  match(lower(tweet), "hotel"), "Hotel", 
+  match(lower(tweet), "courtyard"), "Hotel: Courtyard", 
+  match(lower(tweet), "doubletree"), "Hotel: Doubletree", 
+  match(lower(tweet), "drury"), "Hotel: Drury", 
+  match(lower(tweet), "hampton"), "Hotel: Hampton", 
+  match(lower(tweet), "homewood"), "Hotel: Homewood", 
+  match(lower(tweet), "marriott"), "Hotel: Marriott", 
+  match(lower(tweet), "omni"), "Hotel: Omni", 
+  match(lower(tweet), "renaissance"), "Hotel: Renaissnace", 
+  match(lower(tweet), "westin"), "Hotel: Westin", 
+  match(lower(tweet), "wyndham"), "Hotel: Wyndham", 
+
+  true(), "Other")
+
+| chart sparkline count by keyword
+| rename keyword as Keyword, sparkline as Trend, count as Volume</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Neutral Sentiment</title>
+      <table>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
+| where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE") 
+| search sentiment=NEUTRAL
+| eval keyword=case(
+
+  match(lower(tweet), "alley"), "Alley", 
+  match(lower(tweet), "art show"), "Art Show", 
+  match(lower(tweet), "artshow"), "Art Show", 
+  match(lower(tweet), "dance"), "Dance", 
+  match(lower(tweet), "dances"), "Dance", 
+  match(lower(tweet), "dj"), "Dance: DJ", 
+  match(lower(tweet), "dealer"), "Dealer", 
+  match(lower(tweet), "elevator"), "Elevator", 
+  match(lower(tweet), "line"), "Line", 
+  match(lower(tweet), "security"), "Security", 
+  match(lower(tweet), "parade"), "Parade", 
+  match(lower(tweet), "alkali"), "Performer: Alkali",
+  match(lower(tweet), "boozy"), "Performer: Boozy",
+  match(lower(tweet), "kage"), "Performer: Uncle Kage",
+  match(lower(tweet), "uncle kage"), "Performer: Uncle Kage",
+  match(lower(tweet), "unclekage"), "Performer: Uncle Kage",
+  match(lower(tweet), "pittsburgh"), "Pittsburgh", 
+  match(lower(tweet), "programming"), "Programming", 
+  match(lower(tweet), "registration"), "Registration", 
+  match(lower(tweet), "shuttle"), "shuttle", 
+
+  match(lower(tweet), "hotel"), "Hotel", 
+  match(lower(tweet), "courtyard"), "Hotel: Courtyard", 
+  match(lower(tweet), "doubletree"), "Hotel: Doubletree", 
+  match(lower(tweet), "drury"), "Hotel: Drury", 
+  match(lower(tweet), "hampton"), "Hotel: Hampton", 
+  match(lower(tweet), "homewood"), "Hotel: Homewood", 
+  match(lower(tweet), "marriott"), "Hotel: Marriott", 
+  match(lower(tweet), "omni"), "Hotel: Omni", 
+  match(lower(tweet), "renaissance"), "Hotel: Renaissnace", 
+  match(lower(tweet), "westin"), "Hotel: Westin", 
+  match(lower(tweet), "wyndham"), "Hotel: Wyndham", 
+
+  true(), "Other")
+
+| chart sparkline count by keyword
+| rename keyword as Keyword, sparkline as Trend, count as Volume</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Negative Sentiment</title>
+      <table>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
+| where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE") 
+| search sentiment=NEGATIVE
+| eval keyword=case(
+
+  match(lower(tweet), "alley"), "Alley", 
+  match(lower(tweet), "art show"), "Art Show", 
+  match(lower(tweet), "artshow"), "Art Show", 
+  match(lower(tweet), "dance"), "Dance", 
+  match(lower(tweet), "dances"), "Dance", 
+  match(lower(tweet), "dj"), "Dance: DJ", 
+  match(lower(tweet), "dealer"), "Dealer", 
+  match(lower(tweet), "elevator"), "Elevator", 
+  match(lower(tweet), "line"), "Line", 
+  match(lower(tweet), "security"), "Security", 
+  match(lower(tweet), "parade"), "Parade", 
+  match(lower(tweet), "alkali"), "Performer: Alkali",
+  match(lower(tweet), "boozy"), "Performer: Boozy",
+  match(lower(tweet), "kage"), "Performer: Uncle Kage",
+  match(lower(tweet), "uncle kage"), "Performer: Uncle Kage",
+  match(lower(tweet), "unclekage"), "Performer: Uncle Kage",
+  match(lower(tweet), "pittsburgh"), "Pittsburgh", 
+  match(lower(tweet), "programming"), "Programming", 
+  match(lower(tweet), "registration"), "Registration", 
+  match(lower(tweet), "shuttle"), "shuttle", 
+
+  match(lower(tweet), "hotel"), "Hotel", 
+  match(lower(tweet), "courtyard"), "Hotel: Courtyard", 
+  match(lower(tweet), "doubletree"), "Hotel: Doubletree", 
+  match(lower(tweet), "drury"), "Hotel: Drury", 
+  match(lower(tweet), "hampton"), "Hotel: Hampton", 
+  match(lower(tweet), "homewood"), "Hotel: Homewood", 
+  match(lower(tweet), "marriott"), "Hotel: Marriott", 
+  match(lower(tweet), "omni"), "Hotel: Omni", 
+  match(lower(tweet), "renaissance"), "Hotel: Renaissnace", 
+  match(lower(tweet), "westin"), "Hotel: Westin", 
+  match(lower(tweet), "wyndham"), "Hotel: Wyndham", 
+
+  true(), "Other")
+
+| chart sparkline count by keyword
+| rename keyword as Keyword, sparkline as Trend, count as Volume</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

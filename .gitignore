@@ -7,6 +7,7 @@ __pycache__
 
 # SQLite database
 tweets.db
+tweets.db-journal
 
 # Python dev
 virtualenv/
@@ -14,4 +15,19 @@ virtualenv/
 # Steve Jobs
 .DS_Store
 
+#
+# Never commit our Twitter API credentials
+#
+config.ini
+
+#
+# Never commit our AWS credentials
+#
+docker/aws-credentials.txt
+
+logs/*
+
+splunk-data/
+
+docker/splunk-config/passwd
 

@@ -1,0 +1,90 @@
+
+version: "3"
+
+services:
+
+  furry-1-fetch-tweets:
+    build:
+      context: .
+      dockerfile: "Dockerfile-1-fetch-tweets"
+    restart: "always"
+    privileged: true
+    volumes:
+      - ./..:/mnt
+    environment:
+      - TZ=EST5EDT
+      - NUM=500
+      - LOOP_SECONDS=60
+      #
+      # RESULT_TYPE can be "mixed", "recent", or "popular", with a default to "mixed".
+      # Curiously enough, when I did tests before Anthrocon 2018, "mixed" returned 3550 tweets
+      # while "popular" returned only 3387 tweets.
+      #
+      - RESULT_TYPE=mixed
+
+  furry-2-analyze-tweets:
+    build:
+      context: .
+      dockerfile: "Dockerfile-2-analyze-tweets"
+    restart: "always"
+    privileged: true
+    volumes:
+      - ./..:/mnt
+    environment:
+      - TZ=EST5EDT
+      - NUM=500
+      - LOOP_SECONDS=60
+      #- FAKE=1
+   
+  furry-3-export-tweets:
+    build:
+      context: .
+      dockerfile: "Dockerfile-3-export-tweets"
+    restart: "always"
+    privileged: true
+    volumes:
+      - ./..:/mnt
+    environment:
+      - TZ=EST5EDT
+      - NUM=1000
+      - LOOP_SECONDS=10
+      - FAKE=1
+    
+  furry-4-splunk:
+    build:
+      context: .
+      dockerfile: "Dockerfile-4-splunk"
+    restart: "always"
+    privileged: true
+    volumes:
+      - ./..:/mnt
+      #
+      # Our Splunk app
+      #
+      - ./../splunk-app:/opt/splunk/etc/apps/furry-twitter-sentiment-analysis
+      #
+      # Our Splunk logs
+      #
+      - ./../logs:/var/log/furry-con-twitter-sentiment-analysis
+      - ./../splunk-data/tweets:/opt/splunk/var/lib/splunk/defaultdb
+      - ./../splunk-data/fishbucket:/opt/splunk/var/lib/splunk/fishbucket
+    ports:
+      - 8443:8000
+    environment:
+      - TZ=EST5EDT
+
+  furry-4-backup:
+    build:
+      context: .
+      dockerfile: "Dockerfile-4-backup"
+    restart: "always"
+    privileged: true
+    volumes:
+      - ./..:/mnt
+    environment:
+      - TZ=EST5EDT
+      - S3=s3://anthrocon-furry-tweets
+      - NUM_TO_KEEP=50
+
+
+

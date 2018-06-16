@@ -1,0 +1,90 @@
+<form>
+  <label>Net Sentiment Score</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Span</label>
+      <choice value="1m">1  Min</choice>
+      <choice value="5m">5 Min</choice>
+      <choice value="15m">15 Min</choice>
+      <choice value="1h">1 Hour</choice>
+      <choice value="3h">3 Hours</choice>
+      <choice value="6h">6 Hours</choice>
+      <choice value="1d">1 Day</choice>
+      <default>1h</default>
+    </input>
+    <input type="dropdown" token="tweet_contains" searchWhenChanged="true">
+      <label>Tweet Contains</label>
+      <choice value="*">ANY</choice>
+      <choice value="alley">Alley</choice>
+      <choice value="art show">Art Show</choice>
+      <choice value="dealer">Dealer</choice>
+      <choice value="parade">Parade</choice>
+      <choice value="security">Security</choice>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="high" searchWhenChanged="true">
+      <label>High-Confidence Tweets Only</label>
+      <choice value="">No</choice>
+      <choice value="| where confidence &gt;= 60">Yes</choice>
+      <default></default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" tweet=*$tweet_contains$* 
+| eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ 
+| timechart span=$span$ count(sentiment)  by sentiment | addtotals 
+| eval pct_positive = round(POSITIVE/Total*100, 2) | eval pct_negative = round(NEGATIVE/Total*100, 2) | eval net=pct_positive - pct_negative 
+| timechart span=$span$ avg(net) AS "Net Sentiment Score"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.seriesColors">[0x22ff22]</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.maximumNumber">100</option>
+        <option name="charting.axisY.minimumNumber">-100</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">zero</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+</form>

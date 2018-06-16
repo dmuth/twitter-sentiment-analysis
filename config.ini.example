@@ -1,0 +1,12 @@
+#
+# An example of what Twitter credentials might look like.
+#
+# After running 0-get-twitter-credentials, it will output lines of text in this 
+# format, which you should then copy and paste the output into the file config.ini.
+#
+[twitter_credentials]
+app_key = FIXME
+app_secret = FIXME
+final_oauth_token = FIXME
+final_oauth_token_secret = FIXME
+

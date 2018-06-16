@@ -1,0 +1,277 @@
+#!/usr/bin/env python3
+# Vim: :set softtabstop=0 noexpandtab tabstop=8 
+
+
+import argparse
+import configparser
+import datetime
+import json
+import logging as logger
+import logging.config
+import sys
+import time
+import webbrowser
+
+import dateutil.parser
+import twython
+
+sys.path.append("lib")
+import db
+import db.tables.tweets
+
+
+#
+# Set up the logger
+#
+logging.config.fileConfig("logging_config.ini", disable_existing_loggers = True)
+
+#
+# Parse our arguments
+#
+parser = argparse.ArgumentParser(description = "Analyze crawled text")
+parser.add_argument("--search", type = str, help = "Search string", required = True)
+parser.add_argument("--num", type = int, help = "How many tweets to fetch?", default = 5)
+parser.add_argument("--loop", type = int, help = "Loop after sleeping for N seconds")
+parser.add_argument("--result-type", type = str, default = "mixed", 
+	help = "What kind of results do we want?  Can be 'mixed', 'recent', or 'popular'")
+args = parser.parse_args()
+
+
+#
+# Fetch a number of tweets from Twitter.
+#
+# @param object twitter - Our Twitter oject
+# @param string search_string - The string we're looking for
+# @param integer count - How many tweets to fetch?
+# @param string result_type Can be "mixed", "recent", or "popular"
+# @param kwarg max_id - The maximum Id of tweets so we can go back in time
+#
+# @return A dictionary that includes tweets that aren't RTs, the count, the last ID,
+#	and how many tweets were skipped.
+#
+def getTweets(twitter, search_string, count, result_type, **kwargs):
+
+	retval = {"tweets": [], "count": 0, "skipped": 0, "last_id": -1}
+	logger.info("getTweets(): search_string=%s, count=%d, since_id=%s, result_type=%s last_id=%d" % (
+		search_string, count, kwargs["since_id"], result_type, kwargs["last_id"]))
+	
+	#
+	# If we have a last ID use it in the query,
+	# otherwise we start at the top of the timeline.
+	#
+	# 100 tweets is the max amount and that's what we're going to fetch.
+	# Otherwise, we'll have a scenario where we'll get 60 tweets with 40 RTs, then 
+	# 40 tweets with 20 RTs, and so on and so on and quickly burn through our quota.
+	#
+	if ("last_id" in kwargs and kwargs["last_id"]):
+		max_id = kwargs["last_id"] - 1
+		results = twitter.search(q = search_string, count = 100, max_id = max_id, 
+			result_type = result_type, since_id = kwargs["since_id"], tweet_mode = 'extended')
+
+	else: 
+		#
+		# It appears that include_rts = False doesn't work for the search API. :-(
+		#
+		results = twitter.search(q = search_string, count = 100, 
+			result_type = result_type, since_id = kwargs["since_id"], tweet_mode = 'extended')
+
+	#timezone = time.strftime('%Z%z')
+
+	if "statuses" not in results:
+		logger.info("getTweets(): 'statuses' not found in results, bailing out!")
+		return(retval)
+
+	tweets = results["statuses"]
+	
+	for row in tweets:
+
+		tweet_id = row["id"]
+		tweet = row["full_text"]
+		user = row["user"]["screen_name"]
+		timestamp = int(dateutil.parser.parse(row["created_at"]).timestamp())
+		age = int(time.time()) - timestamp
+		date = datetime.datetime.fromtimestamp(timestamp)
+		date_formatted = date.strftime("%Y-%m-%d %H:%M:%S")
+		url = "https://twitter.com/%s/status/%s" % (user, tweet_id)
+
+		#
+		# Grab the 400x400 version of the profile image
+		#
+		profile_image = row["user"]["profile_image_url_https"]
+		profile_image = profile_image.replace("_normal", "_400x400")
+
+		#
+		# If this is an RT, skip it.
+		#
+		if tweet[0] == "R" and tweet[1] == "T":
+			retval["skipped"] += 1
+
+		else: 
+			#print(json.dumps(row, indent=2)) # Debugging
+			tweet = {
+				"username": user,
+				"date": date_formatted,
+				"time_t": timestamp,
+				"age": age,
+				"id": tweet_id, 
+				"url": url,
+				"text": tweet, 
+				"profile_image": profile_image
+				}
+
+			retval["tweets"].append(tweet)
+			retval["count"] += 1
+
+		#
+		# The last ID of all tweets, so this could possibly be an RT.
+		#
+		retval["last_id"] = tweet_id;
+		
+	return(retval)
+
+
+#
+# Fetch tweets in a series of loops (so we don't exhaust our Twitter API auth rate limit)
+# until we hit our max.
+#
+# @param object twitter Our Twitter object
+# @param string search_string Our search string
+# @param integer in_num_tweets_left How many tweets to fetch per loop?
+# @param string result_type Can be "mixed", "recent", or "popular"
+# @param object data_tweets Database object to write tweets
+# @param integer since_id The highest ID we currently have in the database. Fetch only tweets greater than this number.
+#
+# @return tuple A tuple how many tweets were fetched and skipped.
+#
+def getTweetsLoop(twitter, data_tweets, search_string, in_num_tweets_left, result_type, since_id):
+
+	num_tweets_left = in_num_tweets_left
+	num_tweets_written = 0
+	num_tweets_skipped = 0
+	num_passes_zero_tweets = 3
+	num_passes_zero_tweets_left = num_passes_zero_tweets
+	last_id = False
+
+	while True:
+
+		result = getTweets(twitter, search_string, num_tweets_left, result_type, last_id = last_id, since_id = since_id)
+		rate_limit = twitter.get_lastfunction_header('x-rate-limit-remaining')
+		logger.info("twitter_search_rate_limit_left=" + rate_limit)
+
+		num_tweets_left -= result["count"]
+
+		if result["count"] == 0:
+
+			num_passes_zero_tweets_left -= 1
+			logger.info("We got zero tweets this pass! (%d tweets skipped) passes_left=%d (Are we at the end of the result set?)" % 
+				(result["skipped"], num_passes_zero_tweets_left))
+
+			if num_passes_zero_tweets_left == 0:
+				logger.info("Number of zero passes left == 0. Yep, we're at the end of the result set!")
+				break
+
+			continue
+
+		#
+		# We got some tweets, reset our zero tweets counter
+		#
+		num_passes_zero_tweets_left = num_passes_zero_tweets
+
+		num_tweets_skipped += result["skipped"]
+
+		logger.info("Tweets fetched=%d, skipped=%d, last_id=%s" % (
+			result["count"], result["skipped"], result.get("last_id", None)))
+		logger.info("Tweets left to fetch: %d" % num_tweets_left)
+
+		if "last_id" in result:
+			last_id = result["last_id"]
+
+		for row in result["tweets"]:
+			data_tweets.put(row["username"], row["date"], row["time_t"], 
+				row["id"], row["text"], row["profile_image"], row["url"], row["age"])
+			num_tweets_written += 1
+
+			#
+			# If we hit our max number of tweets written, go ahead and bail out!
+			#
+			if num_tweets_written >= in_num_tweets_left:
+				return(num_tweets_written, num_tweets_skipped)
+
+	return(num_tweets_written, num_tweets_skipped)
+
+
+#
+# Our main function.
+#
+def main(args):
+
+	if args.result_type not in ["mixed", "recent", "popular"]:
+		raise Exception("--result-type must be 'mixed', 'recent', or 'popular'!")
+
+	#
+	# Create our data object for writing to the data table.
+	#
+	sql = db.db()
+	data_tweets = db.tables.tweets.data(sql)
+
+	config = configparser.ConfigParser()
+	filename = "config.ini"
+	config.read(filename)
+	twitter_data = config["twitter_credentials"]
+
+	#
+	# Verify our Twitter credentials
+	#
+	twitter = twython.Twython(twitter_data["app_key"], twitter_data["app_secret"], 
+		twitter_data["final_oauth_token"], twitter_data["final_oauth_token_secret"])
+
+	creds = twitter.verify_credentials()
+	rate_limit = twitter.get_lastfunction_header('x-rate-limit-remaining')
+	logger.info("twitter_rate_limit_verify_credentials_left=" + rate_limit)
+
+	#
+	# Who am I, again?
+	#
+	screen_name = creds["screen_name"]
+	logger.info("My screen name is: " + screen_name)
+
+	#
+	# Fetch the max ID in the tweets table, which will be our since_id
+	# 
+	query = "SELECT MAX(tweet_id) AS tweet_id FROM tweets"
+	results = sql.execute(query)
+
+	since_id = None
+	for row in results:
+		since_id = row["tweet_id"]
+
+	#
+	# Actually fetch our tweets.
+	#
+	print("# ")
+	print("# Fetching %d tweets!" % (args.num))
+	print("# ")
+
+	(num_tweets_written, num_tweets_skipped) = getTweetsLoop(twitter, data_tweets, args.search, args.num, args.result_type, since_id)
+	logger.info("total_tweets_written_to_db=%d (tweets_skiped_because_they_were_rts=%d)" % (
+		num_tweets_written, num_tweets_skipped))
+	logger.info("ok=1")
+
+	#
+	# Turns out that when this is run as a service in systemd with output redirected, 
+	# it is not flushed regularly, and stopping the service loses the output.  Awesome!
+	#
+	sys.stdout.flush()
+
+
+if not args.loop:
+    main(args)
+
+else:
+    while True:
+        main(args)
+        logger.info("Sleeping for %d seconds..." % args.loop)
+        time.sleep(args.loop)
+        logger.info("Waking up!")
+
+

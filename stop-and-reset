@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# This script stops all containers and removes all data
+#
+
+
+# Errors are fatal
+set -e
+
+#
+# Change to our script directory, then Docker
+#
+pushd $(dirname $0)
+cd docker
+
+
+echo "# "
+echo "# Killing and removing all Docker containers..."
+echo "# "
+
+docker-compose kill
+docker-compose rm -f
+
+cd ..
+
+echo "# "
+echo "# Removing Splunk data..."
+echo "# "
+rm -rfv splunk-data
+
+echo "# "
+echo "# Removing logs..."
+echo "# "
+rm -rfv logs/*.log logs/*.stderr
+
+
+echo "# "
+echo "# All done!  When you are ready to restart things, I recommend "
+echo "# resetting the exported flag in the databsae before restarting: "
+echo "# "
+echo "# echo \"UPDATE tweets SET exported='';\" | sqlite3 ./tweets.db"
+echo "# cd docker"
+echo "# docker-compose up -d"
+echo "# "
+echo "# "
+
+
