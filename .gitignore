@@ -1,0 +1,17 @@
+
+# Python droppings
+__pycache__
+
+# Vim droppings
+*.swp
+
+# SQLite database
+tweets.db
+
+# Python dev
+virtualenv/
+
+# Steve Jobs
+.DS_Store
+
+
