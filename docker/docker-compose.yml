@@ -3,7 +3,7 @@ version: "3"
 
 services:
 
-  furry-1-fetch-tweets:
+  twitter-1-fetch-tweets:
     build:
       context: .
       dockerfile: "Dockerfile-1-fetch-tweets"
@@ -22,7 +22,7 @@ services:
       #
       - RESULT_TYPE=mixed
 
-  furry-2-analyze-tweets:
+  twitter-2-analyze-tweets:
     build:
       context: .
       dockerfile: "Dockerfile-2-analyze-tweets"
@@ -36,7 +36,7 @@ services:
       - LOOP_SECONDS=60
       #- FAKE=1
    
-  furry-3-export-tweets:
+  twitter-3-export-tweets:
     build:
       context: .
       dockerfile: "Dockerfile-3-export-tweets"
@@ -50,7 +50,7 @@ services:
       - LOOP_SECONDS=10
       - FAKE=1
     
-  furry-4-splunk:
+  twitter-4-splunk:
     build:
       context: .
       dockerfile: "Dockerfile-4-splunk"
@@ -61,11 +61,11 @@ services:
       #
       # Our Splunk app
       #
-      - ./../splunk-app:/opt/splunk/etc/apps/furry-twitter-sentiment-analysis
+      - ./../splunk-app:/opt/splunk/etc/apps/twitter-sentiment-analysis
       #
       # Our Splunk logs
       #
-      - ./../logs:/var/log/furry-con-twitter-sentiment-analysis
+      - ./../logs:/var/log/twitter-sentiment-analysis
       - ./../splunk-data/tweets:/opt/splunk/var/lib/splunk/defaultdb
       - ./../splunk-data/fishbucket:/opt/splunk/var/lib/splunk/fishbucket
     ports:
@@ -73,7 +73,7 @@ services:
     environment:
       - TZ=EST5EDT
 
-  furry-4-backup:
+  twitter-4-backup:
     build:
       context: .
       dockerfile: "Dockerfile-4-backup"
@@ -83,7 +83,7 @@ services:
       - ./..:/mnt
     environment:
       - TZ=EST5EDT
-      - S3=s3://anthrocon-furry-tweets
+      - S3=s3://dmuth-furry-tweets/dev
       - NUM_TO_KEEP=50
 
 

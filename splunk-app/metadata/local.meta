@@ -11,7 +11,7 @@ owner = admin
 version = 7.1.1
 modtime = 1529455848.415902000
 
-[inputs/monitor%3A%2F%2F%2Fvar%2Flog%2Ffurry-con-twitter-sentiment-analysis%2F1-tweet-fetching-log]
+[inputs/monitor%3A%2F%2F%2Fvar%2Flog%2Ftwitter-sentiment-analysis%2F1-tweet-fetching-log]
 owner = admin
 version = 7.1.1
 modtime = 1529455859.110441000
@@ -21,7 +21,7 @@ owner = admin
 version = 7.1.1
 modtime = 1529455958.608993000
 
-[inputs/monitor%3A%2F%2F%2Fvar%2Flog%2Ffurry-con-twitter-sentiment-analysis%2F2-tweet-sentiment.log]
+[inputs/monitor%3A%2F%2F%2Fvar%2Flog%2Ftwitter-sentiment-analysis%2F2-tweet-sentiment.log]
 owner = admin
 version = 7.1.1
 modtime = 1529455966.132992000
