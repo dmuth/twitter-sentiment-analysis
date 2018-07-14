@@ -22,7 +22,7 @@
   </fieldset>
   <row>
     <panel>
-      <title>Sentiment Over Time by Percentage /w/ Tweet Volume Overlaid</title>
+      <title>Volume Over Time</title>
       <chart>
         <search>
           <query>index=main sourcetype="3-tweets-export-log" | timechart span=$span$ count</query>
