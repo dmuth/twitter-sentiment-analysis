@@ -44,7 +44,7 @@ modtime = 1529700689.074495000
 [views/sentiment_for_twitter_mentions_of_anthrocon_v2]
 owner = admin
 version = 7.1.1
-modtime = 1530313375.837438000
+modtime = 1531610735.461485000
 
 [views/top_promoters_and_detractors]
 access = read : [ * ], write : [ admin, power ]
