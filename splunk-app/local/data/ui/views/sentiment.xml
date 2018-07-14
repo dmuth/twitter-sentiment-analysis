@@ -1,5 +1,5 @@
 <form>
-  <label>Sentiment for Twitter Mentions of "Anthrocon"</label>
+  <label>Sentiment for Twitter Mentions</label>
   <description>RTs are excluded</description>
   <fieldset submitButton="false">
     <input type="time" token="field1" searchWhenChanged="true">
