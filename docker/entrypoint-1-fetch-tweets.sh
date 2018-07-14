@@ -6,7 +6,7 @@
 
 OUTPUT=logs/1-tweet-fetch.log
 STDERR=logs/1-tweet-fetch.stderr
-STRING=${STRING:=anthrocon}
+STRING=${STRING:=linux}
 NUM=${NUM:=5}
 ARGS=""
 

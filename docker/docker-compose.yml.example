@@ -12,6 +12,10 @@ services:
     volumes:
       - ./..:/mnt
     environment:
+      #
+      # "linux" is a good default search string, as there is regular Twitter activity on that term.
+      #
+      - STRING=linux
       - TZ=EST5EDT
       - NUM=500
       - LOOP_SECONDS=60
@@ -83,7 +87,7 @@ services:
       - ./..:/mnt
     environment:
       - TZ=EST5EDT
-      - S3=s3://dmuth-furry-tweets/dev
+      - S3=s3://my-tweets-FIXME
       - NUM_TO_KEEP=50
 
 

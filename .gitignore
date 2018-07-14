@@ -31,3 +31,5 @@ splunk-data/
 
 docker/splunk-config/passwd
 
+docker/docker-compose.yml
+
