@@ -54,7 +54,7 @@ while true
 do
 
 	FILE=$(date +%Y%m%d-%H%M%S)
-	TARGET="${S3}/tweets-${FILE}.db"
+	TARGET="${S3}tweets-${FILE}.db"
 
 	TMP=$(mktemp /tmp/backup-XXXXXXX)
 
@@ -74,10 +74,11 @@ do
 	# (Hopefully there is versioning turned on in S3 just in case an older backup needs to be retrieved)
 	#
 	COUNT_DELETED=0
-	NUM_TO_KEEP=$(( $NUM_TO_KEEP + 1 ))
-	for FILE in $(aws s3 ls $S3 | sort -r | sed -n $NUM_TO_KEEP,\$p | awk '{ print $4 }' )
+	LINES_TO_KEEP=$(( $NUM_TO_KEEP + 1 ))
+
+	for FILE in $(aws s3 ls $S3 | sort -r | sed -n $LINES_TO_KEEP,\$p | awk '{ print $4 }' )
 	do
-		DELETE="${S3}/${FILE}"
+		DELETE="${S3}${FILE}"
 		aws s3 rm ${DELETE} >> $STDOUT 2>> $STDERR
 		COUNT_DELETED=$(( $COUNT_DELETED + 1 ))
 
@@ -86,7 +87,7 @@ do
 	#
 	# Put this output in a date format that Splunk will recognize
 	#
-	echo "$(date "+%Y-%m-%d %H:%M:%S"),$(date +%s%N | cut -b14-16) ok=1 old_backups_deleted=${COUNT_DELETED}" >> $STDOUT 2>>$STDERR
+	echo "$(date "+%Y-%m-%d %H:%M:%S"),$(date +%s%N | cut -b14-16) ok=1 num_to_keep=${NUM_TO_KEEP} old_backups_deleted=${COUNT_DELETED}" >> $STDOUT 2>>$STDERR
 
 	echo "Sleeping for ${LOOP_SECONDS}..." >> $STDOUT >> $STDERR
 	sleep ${LOOP_SECONDS}

@@ -87,7 +87,12 @@ services:
       - ./..:/mnt
     environment:
       - TZ=EST5EDT
-      - S3=s3://my-tweets-FIXME
+      #
+      # A word of caution: the S3 base path *MUST* end in a slash.  This is because
+      # slashes in S3 aren't really directory separators, but just part of the key, and
+      # that means S3 is quite unforgiving if there is no trailing slash or two slashes next to each other.
+      #
+      - S3=s3://my-tweets-FIXME/
       - NUM_TO_KEEP=50
 
 
