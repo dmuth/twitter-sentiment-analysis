@@ -1,9 +1,10 @@
 
-# Furry Convention Analytics
+# Twitter Sentiment Analysis
 
 This app makes use of Twitter's API and AWS Comprehend to get insights about your convention,
 before, during, and after the event by way of analyzing tweet sentiment.  It further
 allows drilldown by user, topic, and search string.
+
 
 ## Requirements
 
@@ -30,15 +31,15 @@ log in with default credentials of `admin/password`.
 
 The following docker containers are used:
 
-- `furry-1-fetch-tweets`
+- `twitter-1-fetch-tweets`
    - Downloads tweets from Twitter with the string "Anthrocon" in them.
-- `furry-2-analyze-tweets`
+- `twitter-2-analyze-tweets`
    - Sends tweets off to AWS to be analyzed
-- `furry-3-export-tweets`
+- `twitter-3-export-tweets`
    - Exports analyzed Tweets from the SQLite database to disk, where they can be analyzed
-- `furry-4-splunk`
+- `twitter-4-splunk`
    - Runs Splunk.
-- `furry-4-backup`
+- `twitter-4-backup`
    - Does regular backups ofthe SQLIte database to AWS S3.
 
 
