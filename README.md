@@ -1,8 +1,8 @@
 
 # Twitter Sentiment Analysis
 
-This app makes use of Twitter's API and AWS Comprehend to get insights about your convention,
-before, during, and after the event by way of analyzing tweet sentiment.  It further
+This app makes use of Twitter's API and AWS Comprehend to get insights about your company,
+city, event, or convention by way of analyzing tweet sentiment.  It further
 allows drilldown by user, topic, and search string.
 
 
