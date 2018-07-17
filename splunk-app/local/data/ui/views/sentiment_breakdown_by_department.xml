@@ -1,5 +1,5 @@
 <form>
-  <label>Sentiment Breakdown by Department</label>
+  <label>Sentiment Breakdown by Keyword</label>
   <fieldset submitButton="false">
     <input type="time" token="time" searchWhenChanged="true">
       <label></label>

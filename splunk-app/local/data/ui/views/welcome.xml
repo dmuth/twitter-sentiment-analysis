@@ -9,7 +9,7 @@
       <li><a href="/app/twitter-sentiment-analysis/tweet_volume">Tweet Volume</a> - Raw Tweet Volume</li>
       <li><a href="/app/twitter-sentiment-analysis/search_tweets">Search Tweets</a> - Search tweets for a string</li>
       <li><a href="/app/twitter-sentiment-analysis/export_tweets">Export Tweets</a> - Search tweets to export</li>
-      <li><a href="/app/twitter-sentiment-analysis/sentiment_breakdown_by_department">Sentiment Breakdown by Department</a> - See how various departments are doing!</li>
+      <li><a href="/app/twitter-sentiment-analysis/sentiment_breakdown_by_department">Sentiment Breakdown by Keyword</a> - See how various keywords are doing!</li>
       <li><a href="/app/twitter-sentiment-analysis/top_promoters_and_detractors">Top Promoters and Detractors</a></li>
       <li><a href="/app/twitter-sentiment-analysis/twitter_stats">Twitter Stats</a></li>
       <li><a href="/app/twitter-sentiment-analysis/user_tweet_report">User Tweet Report</a> - Type in a name, get a Tweet report on a user.</li>
