@@ -14,6 +14,7 @@ allows drilldown by user, topic, and search string.
    - Note that if you create a policy for your IAM credentials (as you should!), the ARN in the Resource array must end in `/*`.  Exammple: `arn:aws:s3:::tweets/*`. There is a byg in the policy generator where this won't happen and your backups will fail.  Be careful
 - Credentials for Twitter in the file `config.ini`.  
    - Those can be obtained by running `0-get-twitter-credentials` on a user laptop, as launching the web browser is required for Twitter's authentication system.
+- Working knowledge of <a href="http://splunk.com/">Splunk</a>.  There is some documentation <a href="http://docs.splunk.com/Documentation/Splunk/7.1.2/SearchTutorial/WelcometotheSearchTutorial">here</a>, but existing dashboards should be enough to get you started.
 
 
 ## Installation
