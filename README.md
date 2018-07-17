@@ -68,6 +68,14 @@ if a lot of tweets are being processed.
 - Tag clouds in Splunk are created with the awesome Wordcloud app, available at <a href="https://splunkbase.splunk.com/app/3212">https://splunkbase.splunk.com/app/3212</a>
 
 
+## TODO
+
+- Modify `1-fetch-tweets` to write config.ini
+- Streamline installation instructions
+- Write up some "priming instructions" for large tweet volumes
+- Allow multiple search terms (comma-delimited?)
+
+
 ## Contact
 
 If there are any issues, feel
