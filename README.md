@@ -54,6 +54,12 @@ Feel free to edit/save new reports in Splunk, they will all show up in the `splu
 Splunk will save its index to `splunk-data/` between runs.
 
 
+## Screenshots
+
+<a href="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/sentiment-breakdown-by-keyword.png"><img src="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/sentiment-breakdown-by-keyword.png" width="250" /></a> <a href="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/tag-cloud.png"><img src="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/tag-cloud.png" width="250" /></a> <a href="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/tweet-volume.png"><img src="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/tweet-volume.png" width="250" /></a>  <a href="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/twitter-stats.png"><img src="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/twitter-stats.png" width="250" /></a> <a href="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/sentiment-for-twitter-mentions.png"><img src="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/sentiment-for-twitter-mentions.png" width="250" /></a> <a href="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/search-tweets.png"><img src="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/search-tweets.png" width="250" /></a> <a href="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/service-status.png"><img src="https://raw.githubusercontent.com/dmuth/twitter-sentiment-analysis/master/img/service-status.png" width="250" /></a>
+
+
+
 ## Known Issues
 
 Since the SQLite file `tweets.db` is shared between several containers/services, there may occasionally
