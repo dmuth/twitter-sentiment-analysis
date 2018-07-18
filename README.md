@@ -71,7 +71,6 @@ if a lot of tweets are being processed.
 
 ## TODO
 
-- Modify `1-fetch-tweets` to write config.ini
 - Streamline installation instructions
 - Write up some "priming instructions" for large tweet volumes
 - Allow multiple search terms (comma-delimited?)
