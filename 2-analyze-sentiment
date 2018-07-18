@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Vim: :set softtabstop=0 noexpandtab tabstop=8 
 
 import argparse
 import boto3
@@ -48,19 +49,28 @@ def analyze(comprehend, batch, fake):
 		#
 		results = []
 
-		fake_sentiment = {
-			"Positive": 0.25,
-			"Negative": 0.50,
-			"Mixed": 0.75,
-			"Neutral": 0.9,
-			}
-		fake_sentiment_string = json.dumps(fake_sentiment)
-
+		#
+		# Fake sentiment values
+		#
+		values = [ 
+			{"Sentiment": "POSITIVE", "Score": { "Positive": 0.9, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.5 } },
+			{"Sentiment": "NEGATIVE", "Score": { "Positive": 0.5, "Negative": 0.9, "Mixed": 0.5, "Neutral": 0.5 } },
+			{"Sentiment": "MIXED", "Score": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.9, "Neutral": 0.5 } },
+			{"Sentiment": "NEUTRAL", "Score": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.9 } }
+			]
+                       
+		#
+		# Now loop through our tweets, grab a different sentiment for each, and store the results.
+		#
 		index = 0
 		for row in tweets:
+
+			fake_sentiment_value = values[index % 4]
+
 			results.append({
-				"Index": index, "Sentiment": "TEST positive", 
-				"SentimentScore": fake_sentiment
+				"Index": index, 
+				"Sentiment": fake_sentiment_value["Sentiment"],
+				"SentimentScore": fake_sentiment_value["Score"]
 				})
 			index += 1
 
@@ -68,6 +78,11 @@ def analyze(comprehend, batch, fake):
 		results = comprehend.batch_detect_sentiment(TextList = tweets, LanguageCode='en')
 		results = results["ResultList"]
 
+
+	#
+	# Go through our results (real or fake), and put them into a common data structure
+	# which is then returned.
+	#
 	for result in results:
 
 		index = result["Index"]
