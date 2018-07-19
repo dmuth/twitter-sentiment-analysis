@@ -33,7 +33,7 @@ log in with default credentials of `admin/password`.
 The following docker containers are used:
 
 - `twitter-1-fetch-tweets`
-   - Downloads tweets from Twitter with the string "Anthrocon" in them.
+   - Downloads tweets from Twitter with a search string in them.
 - `twitter-2-analyze-tweets`
    - Sends tweets off to AWS to be analyzed
 - `twitter-3-export-tweets`
