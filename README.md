@@ -8,13 +8,10 @@ allows drilldown by user, topic, and search string.
 
 ## Requirements
 
-- A machine with Docker installed.
-- Credentials for AWS in the file `docker/aws-credentials.txt`
-   - Access to a single S3 bucket and AWS Comprehend will be required
-   - Note that if you create a policy for your IAM credentials (as you should!), the ARN in the Resource array must end in `/*`.  Exammple: `arn:aws:s3:::tweets/*`. There is a byg in the policy generator where this won't happen and your backups will fail.  Be careful
-- Credentials for Twitter in the file `config.ini`.  
-   - Those can be obtained by running `0-get-twitter-credentials` on a user laptop, as launching the web browser is required for Twitter's authentication system.
+- Twitter credentials (these can be created on the fly when running the first script)
+- AWS Credentials
 - Working knowledge of <a href="http://splunk.com/">Splunk</a>.  There is some documentation <a href="http://docs.splunk.com/Documentation/Splunk/7.1.2/SearchTutorial/WelcometotheSearchTutorial">here</a>, but existing dashboards should be enough to get you started.
+- Docker (optional)
 
 
 ## Installation
@@ -26,6 +23,8 @@ Try this first, so you can make sure your credentials are set up and you have a 
 
 - `pip install -r ./requirements.txt` (Run <a href="https://virtualenv.pypa.io/en/stable/">Virtualenv</a> first if you want...)
 - Make sure you have <a href="https://aws.amazon.com/cli/">AWS CLI</a> installed and ran `aws configure` to enter your AWS credentials.
+   - Access to a single S3 bucket and AWS Comprehend will be required
+   - Note that if you create a policy for your IAM credentials (as you should!), the ARN in the Resource array must end in `/*`.  Exammple: `arn:aws:s3:::tweets/*`. There is a byg in the policy generator where this won't happen and your backups will fail.  Be careful
 - Run `0-get-twitter-credentials` on your machine.  It will open a web browser where you can create a Twitter app (if necessary), and the script will prompt you for all the credentials to enter.  Then it will write `config.ini` with the credentials.
 - Run `1-fetch-tweets` to fetch tweets and write them to `tweets.db`.
 - Run `2-analyze-sentiment` to analyze the downloadeded tweets.
