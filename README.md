@@ -19,8 +19,26 @@ allows drilldown by user, topic, and search string.
 
 ## Installation
 
+
+### Manually
+
+Try this first, so you can make sure your credentials are set up and you have a feel for how the app works:
+
+- `pip install -r ./requirements.txt` (Run <a href="https://virtualenv.pypa.io/en/stable/">Virtualenv</a> first if you want...)
+- Make sure you have <a href="https://aws.amazon.com/cli/">AWS CLI</a> installed and ran `aws configure` to enter your AWS credentials.
+- Run `0-get-twitter-credentials` on your machine.  It will open a web browser where you can create a Twitter app (if necessary), and the script will prompt you for all the credentials to enter.  Then it will write `config.ini` with the credentials.
+- Run `1-fetch-tweets` to fetch tweets and write them to `tweets.db`.
+- Run `2-analyze-sentiment` to analyze the downloadeded tweets.
+- Run `3-export-analyzed-tweets` to print the analyzed tweets to stdout.  This can be redirected to a file for ingestion into <a href="http://www.splunk.com/">Splunk</a>.
+
+
+### Via Docker
+
+Once you understand how the app works, this is the preferred method, as tweets will be continualy downloaded and analyzed.
+
 - `cd docker/`
-- Edit the file `docker-compose.yml`, if you wish
+- `cp ~/.aws/credentials aws-credentials.txt`
+- Copy `docker-compose.yml.example` to `docker-compose.yml` and edit the latter with things like your search string and other values
 - `docker-compose up -d`
 
 This will start up several Docker containers in the background running various Python
