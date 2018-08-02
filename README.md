@@ -93,7 +93,7 @@ if a lot of tweets are being processed.
 
 ## TODO
 
-- Streamline installation instructions
+- Don't copy AWS credentials into the image at build time, copy them in at run-time insead.
 - Write up some "priming instructions" for large tweet volumes
 - Allow multiple search terms (comma-delimited?)
 
