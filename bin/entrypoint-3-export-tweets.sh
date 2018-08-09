@@ -12,14 +12,13 @@ then
 	ARGS="${ARGS} --loop ${LOOP_SECONDS}"
 fi
 
-if test "$FAKE"
+if test "$FORCE"
 then
-	ARGS="${ARGS} --fake"
+	ARGS="${ARGS} --force"
 fi
 
-
-STDOUT=logs/2-tweet-analyze.log
-STDERR=logs/2-tweet-analyze.stderr
+STDOUT=logs/3-tweet-export.log
+STDERR=logs/3-tweet-export.stderr
 
 #
 # If we're in debug mode, write to stdout.  This is useful for development.
@@ -31,22 +30,12 @@ then
 	STDERR=/dev/stderr
 fi
 
-
-AWS_CREDS=$HOME/.aws/credentials
-if test ! -f $AWS_CREDS
-then
-	echo "! "
-	echo "! AWS Credentials not found in $AWS_CREDS!  Stopping."
-	echo "! "
-	exit 1
-fi
-
 echo "# "
 echo "# Starting Tweet analysis script"
 echo "# "
-echo "# Available env vars: NUM, LOOP_SECONDS, FAKE"
+echo "# Available env vars: NUM, LOOP_SECONDS, FORCE, DEBUG"
 echo "# "
-echo "# Number of tweets to analyze per loop: ${NUM}"
+echo "# Number of tweets to export per loop: ${NUM}"
 echo "# "
 
 if test "$LOOP_SECONDS"
@@ -58,9 +47,9 @@ else
 	echo "# "
 fi
 
-if test "$FAKE"
+if test "$FORCE"
 then
-	echo "# We are faking calls to AWS so as not to run up our bill."
+	echo "# We are forcing exports of all tweets"
 	echo "# "
 fi
 
@@ -70,13 +59,12 @@ then
 	echo "# "
 fi
 
-exit 1
+echo "# "
 echo "# "
 echo "# Output will be written to: ${STDOUT}"
 echo "# Stderr will be written to: ${STDERR}"
 echo "# "
 
-
-./2-analyze-sentiment  --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
+./bin/3-export-analyzed-tweets  --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
 
 

@@ -36,7 +36,6 @@ allows drilldown by user, topic, and search string.
 
 Now you can run the app via Docker:
 
-- `cd docker/`
 - `cp ~/.aws/credentials aws-credentials.txt`
 - Copy `docker-compose.yml.example` to `docker-compose.yml` and edit the latter with things like your search string and other values
 - `docker-compose up -d`
@@ -80,10 +79,22 @@ To do developmenton a container, first go into `docker-compose.yml` and uncommen
 - `export C="1-fetch-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
 - `export C="2-analyze-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
 - `export C="3-export-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
+- `export C="4-splunk"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
 - `export C="4-backup"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
 
-With `debug` enabled, standard output and standard error will be written to the screen instead of
-to `logs/`.  Note that for `3-export-tweets` specifically, this means that tweets will not make it into Splunk.
+With `DEBUG` enabled, standard output and standard error will be written to the screen instead of
+to `logs/`.  Note that for `3-export-tweets` specifically, this means that tweets will not be written 
+to logfiles and therefore not make it into Splunk.
+
+To attach to the running Splunk instance for troubleshooting:
+
+- `docker-compose exec 4-splunk bash`
+
+
+### Resetting The App
+
+Run `./bin/stop-and-reset` to kill and remove all services and remove all logs files. The data in the
+database will remain untouched.
 
 
 ## Known Issues
@@ -103,7 +114,6 @@ if a lot of tweets are being processed.
 
 ## TODO
 
-- Don't copy AWS credentials into the image at build time, copy them in at run-time insead.
 - Write up some "priming instructions" for large tweet volumes
 - Allow multiple search terms (comma-delimited?)
 

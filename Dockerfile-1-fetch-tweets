@@ -10,7 +10,6 @@ RUN apk add python3
 COPY requirements.txt /mnt/
 RUN pip3 install -r /mnt/requirements.txt
 
-
-CMD /mnt/docker/entrypoint-1-fetch-tweets.sh
+CMD /mnt/bin/entrypoint-1-fetch-tweets.sh
 
 

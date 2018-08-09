@@ -11,6 +11,6 @@ COPY requirements.txt /mnt/
 RUN pip3 install -r /mnt/requirements.txt
 
 
-CMD /mnt/docker/entrypoint-3-export-tweets.sh
+CMD /mnt/bin/entrypoint-3-export-tweets.sh
 
 

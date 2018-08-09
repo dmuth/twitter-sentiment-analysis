@@ -46,7 +46,7 @@ COPY splunk-config/web.conf /opt/splunk/etc/system/local/web.conf.in
 #
 # Install Wordcloud and remove "splunk>" when "feeling fun".
 #
-COPY lib/wordcloud-custom-visualization_111.tgz /tmp/
+COPY splunk-app/wordcloud-custom-visualization_111.tgz /tmp/
 WORKDIR /tmp
 RUN tar xfvz /tmp/wordcloud-custom-visualization_111.tgz 2>/dev/null \
 	&& mv /tmp/wordcloud_app /opt/splunk/etc/apps/wordcloud_app/ 
@@ -57,7 +57,7 @@ RUN tar xfvz /tmp/wordcloud-custom-visualization_111.tgz 2>/dev/null \
 #
 EXPOSE 8443/tcp
 
-CMD /mnt/docker/entrypoint-4-splunk.sh
+ENTRYPOINT ["/mnt/bin/entrypoint-4-splunk.sh"]
 
 
 

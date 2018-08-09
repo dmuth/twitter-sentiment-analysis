@@ -14,8 +14,7 @@ RUN pip3 install -r /mnt/requirements.txt
 # Copy in our AWS credentials
 #
 RUN mkdir /root/.aws/
-COPY aws-credentials.txt /root/.aws/credentials
 
-CMD /mnt/docker/entrypoint-2-analyze-tweets.sh
+CMD /mnt/bin/entrypoint-2-analyze-tweets.sh
 
 

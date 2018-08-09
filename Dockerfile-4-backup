@@ -10,6 +10,6 @@ RUN pip3 install awscli
 
 RUN mkdir /root/.aws/
 
-CMD /mnt/docker/entrypoint-4-backup-tweets.sh
+CMD /mnt/bin/entrypoint-4-backup-tweets.sh
 
 

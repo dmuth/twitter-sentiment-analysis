@@ -53,6 +53,6 @@ echo "# Stderr will be written to: ${STDERR}"
 echo "# "
 
 
-./1-fetch-tweets --search ${STRING} --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
+./bin/1-fetch-tweets --search ${STRING} --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
 
 

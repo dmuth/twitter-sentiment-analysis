@@ -11,7 +11,7 @@ set -e
 # Change to our script directory, then Docker
 #
 pushd $(dirname $0)
-cd docker
+cd ..
 
 
 echo "# "
@@ -21,7 +21,6 @@ echo "# "
 docker-compose kill
 docker-compose rm -f
 
-cd ..
 
 echo "# "
 echo "# Removing Splunk data..."

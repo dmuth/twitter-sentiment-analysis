@@ -17,12 +17,12 @@ cat web.conf.in | sed -e "s/%password%/${SPLUNK_PASSWORD}/" > web.conf
 
 popd > /dev/null
 
-if test -f /mnt/docker/splunk-config/passwd
+if test -f /mnt/splunk-config/passwd
 then
 	echo "# "
 	echo "# Splunk passwd file found, importing that into Splunk!"
 	echo "# "
-	cp /mnt/docker/splunk-config/passwd /opt/splunk/etc/
+	cp /mnt/splunk-config/passwd /opt/splunk/etc/
 fi
 
 
