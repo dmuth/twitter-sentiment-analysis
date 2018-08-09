@@ -41,8 +41,8 @@ Now you can run the app via Docker:
 - `docker-compose up -d`
 
 This will start up several Docker containers in the background running various Python
-scripts and a copy of Splunk.  To access Splunk, go to https://localhost:8000/ and
-log in with default credentials of `admin/password`.
+scripts and a copy of Splunk.  To access Splunk, go to http://localhost:8000/ and
+log in with default credentials of `admin/password`.  **Do not expose this port to the Internet. Use nginx with HTTPS as a proxy if you do!**
 
 
 ## Architecture Overview

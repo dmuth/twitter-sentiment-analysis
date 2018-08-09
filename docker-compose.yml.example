@@ -75,7 +75,7 @@ services:
       - ./../splunk-data/tweets:/opt/splunk/var/lib/splunk/defaultdb
       - ./../splunk-data/fishbucket:/opt/splunk/var/lib/splunk/fishbucket
     ports:
-      - 8443:8000
+      - 8000:8000
     environment:
       - TZ=EST5EDT
 
