@@ -18,8 +18,19 @@ then
 fi
 
 
-OUTPUT=logs/2-tweet-analyze.log
+STDOUT=logs/2-tweet-analyze.log
 STDERR=logs/2-tweet-analyze.stderr
+
+#
+# If we're in debug mode, write to stdout.  This is useful for development.
+#
+if test "$DEBUG"
+then
+	echo "##### DEBUG MODE ENABLED: Writing to stdout and stderr!"
+	STDOUT=/dev/stdout
+	STDERR=/dev/stderr
+fi
+
 
 AWS_CREDS=$HOME/.aws/credentials
 if test ! -f $AWS_CREDS
@@ -59,12 +70,13 @@ then
 	echo "# "
 fi
 
+exit 1
 echo "# "
-echo "# Output will be written to: ${OUTPUT}"
+echo "# Output will be written to: ${STDOUT}"
 echo "# Stderr will be written to: ${STDERR}"
 echo "# "
 
 
-./2-analyze-sentiment  --num ${NUM} ${ARGS} >> ${OUTPUT} 2>> ${STDERR}
+./2-analyze-sentiment  --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
 
 

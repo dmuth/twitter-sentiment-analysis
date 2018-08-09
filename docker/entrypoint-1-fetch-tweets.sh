@@ -4,11 +4,21 @@
 #
 
 
-OUTPUT=logs/1-tweet-fetch.log
+STDOUT=logs/1-tweet-fetch.log
 STDERR=logs/1-tweet-fetch.stderr
 STRING=${STRING:=linux}
 NUM=${NUM:=5}
 ARGS=""
+
+#
+# If we're in debug mode, write to stdout.  This is useful for development.
+#
+if test "$DEBUG"
+then
+	echo "##### DEBUG MODE ENABLED: Writing to stdout and stderr!"
+	STDOUT=/dev/stdout
+	STDERR=/dev/stderr
+fi
 
 if test "$LOOP_SECONDS"
 then
@@ -24,7 +34,7 @@ fi
 echo "# "
 echo "# Starting Tweet fetching script"
 echo "# "
-echo "# Available env vars: NUM, STRING, LOOP_SECONDS, RESULT_TYPE"
+echo "# Available env vars: NUM, STRING, LOOP_SECONDS, RESULT_TYPE, DEBUG"
 echo "# "
 echo "# Search String: $STRING "
 echo "# Number of tweets to fetch per loop: ${NUM}"
@@ -38,11 +48,11 @@ else
 fi
 echo "# "
 echo "# "
-echo "# Output will be written to: ${OUTPUT}"
+echo "# Output will be written to: ${STDOUT}"
 echo "# Stderr will be written to: ${STDERR}"
 echo "# "
 
 
-./1-fetch-tweets --search ${STRING} --num ${NUM} ${ARGS} >> ${OUTPUT} 2>> ${STDERR}
+./1-fetch-tweets --search ${STRING} --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
 
 

@@ -74,9 +74,16 @@ Splunk will save its index to `splunk-data/` between runs.
 
 ## Development
 
-How to run the `backup` script in the foreground for development:
-`docker-compose kill 4-backup && docker-compose rm -f 4-backup && docker-compose build 4-backup && docker-compose up 4-backup`
+To do developmenton a container, first go into `docker-compose.yml` and uncomment the `DEBUG` line in
+`environment:`. Then run one of these commands:
 
+- `export C="1-fetch-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
+- `export C="2-analyze-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
+- `export C="3-export-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
+- `export C="4-backup"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
+
+With `debug` enabled, standard output and standard error will be written to the screen instead of
+to `logs/`.  Note that for `3-export-tweets` specifically, this means that tweets will not make it into Splunk.
 
 
 ## Known Issues

@@ -25,6 +25,7 @@ services:
       # while "popular" returned only 3387 tweets.
       #
       - RESULT_TYPE=mixed
+      - DEBUG=1 # Set to print output in the foreground
 
   twitter-2-analyze-tweets:
     build:
@@ -38,7 +39,8 @@ services:
       - TZ=EST5EDT
       - NUM=500
       - LOOP_SECONDS=60
-      #- FAKE=1
+      #- FAKE=1 # Set to fake doing analysis on tweets
+      - DEBUG=1 # Set to print output in the foreground
    
   twitter-3-export-tweets:
     build:
@@ -52,7 +54,7 @@ services:
       - TZ=EST5EDT
       - NUM=1000
       - LOOP_SECONDS=10
-      - FAKE=1
+      - DEBUG=1 # Set to print output in the foreground
     
   twitter-4-splunk:
     build:

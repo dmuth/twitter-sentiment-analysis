@@ -17,14 +17,23 @@ then
 	ARGS="${ARGS} --force"
 fi
 
-OUTPUT=logs/3-tweet-export.log
+STDOUT=logs/3-tweet-export.log
 STDERR=logs/3-tweet-export.stderr
 
+#
+# If we're in debug mode, write to stdout.  This is useful for development.
+#
+if test "$DEBUG"
+then
+	echo "##### DEBUG MODE ENABLED: Writing to stdout and stderr!"
+	STDOUT=/dev/stdout
+	STDERR=/dev/stderr
+fi
 
 echo "# "
 echo "# Starting Tweet analysis script"
 echo "# "
-echo "# Available env vars: NUM, LOOP_SECONDS, FORCE"
+echo "# Available env vars: NUM, LOOP_SECONDS, FORCE, DEBUG"
 echo "# "
 echo "# Number of tweets to export per loop: ${NUM}"
 echo "# "
@@ -52,11 +61,11 @@ fi
 
 echo "# "
 echo "# "
-echo "# Output will be written to: ${OUTPUT}"
+echo "# Output will be written to: ${STDOUT}"
 echo "# Stderr will be written to: ${STDERR}"
 echo "# "
 
 
-./3-export-analyzed-tweets  --num ${NUM} ${ARGS} >> ${OUTPUT} 2>> ${STDERR}
+./3-export-analyzed-tweets  --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
 
 
