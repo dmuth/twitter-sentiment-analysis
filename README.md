@@ -54,15 +54,15 @@ log in with default credentials of `admin/password`.
 
 The following docker containers are used:
 
-- `twitter-1-fetch-tweets`
+- `1-fetch-tweets`
    - Downloads tweets from Twitter with a search string in them.
-- `twitter-2-analyze-tweets`
+- `2-analyze-tweets`
    - Sends tweets off to AWS to be analyzed
-- `twitter-3-export-tweets`
+- `3-export-tweets`
    - Exports analyzed Tweets from the SQLite database to disk, where they can be analyzed
-- `twitter-4-splunk`
+- `4-splunk`
    - Runs Splunk.
-- `twitter-4-backup`
+- `4-backup`
    - Does regular backups ofthe SQLIte database to AWS S3.
 
 
@@ -74,6 +74,13 @@ Feel free to edit/save new reports in Splunk, they will all show up in the `splu
 ## Data persistence
 
 Splunk will save its index to `splunk-data/` between runs.
+
+
+## Development
+
+How to run the `backup` script in the foreground for development:
+`docker-compose kill 4-backup && docker-compose rm -f 4-backup && docker-compose build 4-backup && docker-compose up 4-backup`
+
 
 
 ## Known Issues

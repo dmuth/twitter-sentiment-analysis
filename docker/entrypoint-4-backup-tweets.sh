@@ -8,15 +8,43 @@ set -e
 
 LOOP_SECONDS=${LOOP_SECONDS:=900}
 NUM_TO_KEEP=${NUM_TO_KEEP:=40}
+
 STDOUT=../logs/4-tweet-backups.log
 STDERR=../logs/4-tweet-backups.stderr
+
+#
+# If we're in debug mode, write to stdout.  This is useful for development.
+#
+if test "$DEBUG"
+then
+	echo "##### DEBUG MODE ENABLED: Writing to stdout and stderr!"
+	STDOUT=/dev/stdout
+	STDERR=/dev/stderr
+fi
+
+
+#
+# Check for and copy in our AWS credentials from the host container.
+#
+AWS_CREDS=/mnt/docker/aws-credentials.txt
+if test ! -f $AWS_CREDS
+then
+	echo "! "
+	echo "! AWS Credentials not found in $AWS_CREDS!  Stopping."
+	echo "! "
+	exit 1
+fi
+
+cp $AWS_CREDS $HOME/.aws/credentials
 
 #
 # Change to the directoy where this script is.
 # We have this here in part so that we can run the script while in the container
 # for development.
 #
+pwd
 pushd $(dirname $0) > /dev/null
+pwd
 
 if test ! "$S3"
 then
@@ -89,7 +117,7 @@ do
 	#
 	echo "$(date "+%Y-%m-%d %H:%M:%S"),$(date +%s%N | cut -b14-16) ok=1 num_to_keep=${NUM_TO_KEEP} old_backups_deleted=${COUNT_DELETED}" >> $STDOUT 2>>$STDERR
 
-	echo "Sleeping for ${LOOP_SECONDS}..." >> $STDOUT >> $STDERR
+	echo "Sleeping for ${LOOP_SECONDS} seconds..." >> $STDOUT >> $STDERR
 	sleep ${LOOP_SECONDS}
 
 done

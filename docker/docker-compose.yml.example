@@ -94,6 +94,7 @@ services:
       #
       - S3=s3://my-tweets-FIXME/
       - NUM_TO_KEEP=50
+      #- DEBUG=1 # Set to print output in the foreground
 
 
 
