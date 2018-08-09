@@ -68,7 +68,7 @@ fi
 echo "# "
 echo "# Starting Tweet analysis script"
 echo "# "
-echo "# Available env vars: LOOP_SECONDS"
+echo "# Available env vars: S3 LOOP_SECONDS DEBUG"
 echo "# "
 echo "# Backing up to S3 location: ${S3}"
 echo "# Looping this many seconds: ${LOOP_SECONDS}"
