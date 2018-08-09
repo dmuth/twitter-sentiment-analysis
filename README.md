@@ -22,23 +22,19 @@ allows drilldown by user, topic, and search string.
 ## Installation
 
 
-### Manually
+### Setting up credentials
 
-Try this first, so you can make sure your credentials are set up and you have a feel for how the app works:
-
-- `pip install -r ./requirements.txt` (Run <a href="https://virtualenv.pypa.io/en/stable/">Virtualenv</a> first if you want...)
+- Get your Twitter credentials:
+   - `docker build -f ./Dockerfile-0-get-twitter-credentials -t 0-get-twitter-credentials . && docker run -v $(pwd):/mnt -it 0-get-twitter-credentials . && docker run -v $(pwd):/mnt -it 0-get-twitter-credentials`
+   - Running this script will walk your through the steps, so it should be straightforward.
 - Make sure you have <a href="https://aws.amazon.com/cli/">AWS CLI</a> installed and ran `aws configure` to enter your AWS credentials.
    - Access to a single S3 bucket and AWS Comprehend will be required
    - Note that if you create a policy for your IAM credentials (as you should!), the ARN in the Resource array must end in `/*`.  Exammple: `arn:aws:s3:::tweets/*`. There is a byg in the policy generator where this won't happen and your backups will fail.  Be careful
-- Run `0-get-twitter-credentials` on your machine.  It will open a web browser where you can create a Twitter app (if necessary), and the script will prompt you for all the credentials to enter.  Then it will write `config.ini` with the credentials.
-- Run `1-fetch-tweets` to fetch tweets and write them to `tweets.db`.
-- Run `2-analyze-sentiment` to analyze the downloadeded tweets.
-- Run `3-export-analyzed-tweets` to print the analyzed tweets to stdout.  This can be redirected to a file for ingestion into <a href="http://www.splunk.com/">Splunk</a>.
 
 
-### Via Docker
+### Running the app
 
-Once you understand how the app works, this is the preferred method, as tweets will be continualy downloaded and analyzed.
+Now you can run the app via Docker:
 
 - `cd docker/`
 - `cp ~/.aws/credentials aws-credentials.txt`
