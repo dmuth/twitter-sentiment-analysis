@@ -45,6 +45,17 @@ scripts and a copy of Splunk.  To access Splunk, go to http://localhost:8000/ an
 log in with default credentials of `admin/password`.  **Do not expose this port to the Internet. Use nginx with HTTPS as a proxy if you do!**
 
 
+### Exporting the Password file
+
+If you create users and want them to persist between runs, you can export the passwd file with this script:
+
+`./bin/export-password-file-from-splunk`
+
+Running that will export the passwd file from Splukn and sstore it in `splunk-config/passwd`.  If the container
+is deleted at any point and then re-run, the passwd file will be copied into Splunk so the users will be able 
+to log back in.
+
+
 ## Architecture Overview
 
 The following docker containers are used:
