@@ -23,13 +23,17 @@ config.ini
 #
 # Never commit our AWS credentials
 #
-docker/aws-credentials.txt
+aws-credentials.txt
 
 logs/*
 
 splunk-data/
 
-docker/splunk-config/passwd
+docker-compose.yml
 
-docker/docker-compose.yml
+#
+# Don't accidentally check in an exported passwd file
+#
+splunk-config/passwd
+
 
