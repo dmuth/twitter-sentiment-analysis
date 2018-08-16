@@ -17,7 +17,11 @@ services:
       #
       - STRING=linux
       - TZ=EST5EDT
-      - NUM=500
+      #
+      # We set this to a really high number to start with, because on the 
+      # first pass, many tweets might be fetched.
+      #
+      - NUM=5000
       - LOOP_SECONDS=60
       #
       # RESULT_TYPE can be "mixed", "recent", or "popular", with a default to "mixed".
