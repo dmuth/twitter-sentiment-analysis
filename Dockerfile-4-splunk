@@ -55,7 +55,7 @@ RUN tar xfvz /tmp/wordcloud-custom-visualization_111.tgz 2>/dev/null \
 #
 # Expose Splunk web
 #
-EXPOSE 8443/tcp
+EXPOSE 8000/tcp
 
 ENTRYPOINT ["/mnt/bin/entrypoint-4-splunk.sh"]
 
