@@ -51,6 +51,11 @@ args = parser.parse_args()
 #
 def getTweets(twitter, search_string, count, result_type, **kwargs):
 
+	#
+	# Turn our array into a string of "OR" terms.
+	#
+	search_string = " OR " . join(search_string)
+
 	retval = {"tweets": [], "count": 0, "skipped": 0, "last_id": -1}
 	logger.info("getTweets(): search_string=%s, count=%d, since_id=%s, result_type=%s last_id=%d" % (
 		search_string, count, kwargs["since_id"], result_type, kwargs["last_id"]))
@@ -207,6 +212,15 @@ def main(args):
 
 	if args.result_type not in ["mixed", "recent", "popular"]:
 		raise Exception("--result-type must be 'mixed', 'recent', or 'popular'!")
+
+	#
+	# Turn this into an array and then put each value in quotes
+	# in case there are any spaces involved.
+	#
+	args.search = args.search.split(",")
+	for key, value in enumerate(args.search):
+		args.search[key] = '"' + value + '"'
+
 
 	#
 	# Create our data object for writing to the data table.

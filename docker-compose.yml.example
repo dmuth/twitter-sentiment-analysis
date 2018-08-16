@@ -15,7 +15,16 @@ services:
       #
       # "linux" is a good default search string, as there is regular Twitter activity on that term.
       #
+      #
+      # If you want to search for multiple strings, they should be separateed by a comma.
+      # Spaces in a term are even fine!  
+      #
+      # e.g. linux,redhat,red hat
+      #
+      # However, DO NOT ENCLOSE THE STRING IN QUOTES.  It will cause problems running the script if you do.
+      #
       - STRING=linux
+      #- STRING=linux,redhat,red hat
       - TZ=EST5EDT
       #
       # We set this to a really high number to start with, because on the 

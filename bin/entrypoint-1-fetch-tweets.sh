@@ -52,7 +52,9 @@ echo "# Output will be written to: ${STDOUT}"
 echo "# Stderr will be written to: ${STDERR}"
 echo "# "
 
-
-./bin/1-fetch-tweets --search ${STRING} --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
+#
+# We are enclosing the string in quotes here, since it could possibly have spaces in it.
+#
+./bin/1-fetch-tweets --search "${STRING}" --num ${NUM} ${ARGS} >> ${STDOUT} 2>> ${STDERR}
 
 
