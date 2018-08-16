@@ -93,13 +93,25 @@ To do developmenton a container, first go into `docker-compose.yml` and uncommen
 - `export C="4-splunk"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
 - `export C="4-backup"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose up $C`
 
-With `DEBUG` enabled, standard output and standard error will be written to the screen instead of
+With `DEBUG` enabled in `docker-compose.yml`, standard output and standard error will be written to the screen instead of
 to `logs/`.  Note that for `3-export-tweets` specifically, this means that tweets will not be written 
 to logfiles and therefore not make it into Splunk.
 
 To attach to the running Splunk instance for troubleshooting:
 
 - `docker-compose exec 4-splunk bash`
+
+
+### Interactive Bash Shells
+
+Do you want an interactive `bash` shell so that you can instead stay in the container and run the script repeatedly?
+Here, try these commands:
+
+- `export C="1-fetch-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
+- `export C="2-analyze-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
+- `export C="3-export-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
+- `export C="4-splunk"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
+- `export C="4-backup"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
 
 
 ### Resetting The App
