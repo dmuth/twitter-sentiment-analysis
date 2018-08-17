@@ -85,7 +85,7 @@ access = read : [ * ], write : [ power ]
 export = none
 owner = admin
 version = 7.1.1
-modtime = 1534473932.878517000
+modtime = 1534546047.933303000
 
 [views/tag_clouds]
 owner = admin
@@ -110,3 +110,8 @@ export = none
 owner = admin
 version = 7.1.1
 modtime = 1531254434.279739000
+
+[views/hashtags]
+owner = admin
+version = 7.1.1
+modtime = 1534475402.135941000
