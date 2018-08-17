@@ -1,56 +1,133 @@
 <dashboard>
   <label>Welcome</label>
   <row>
-  <html>
+    <panel>
+      <html>
     
     All tweets with your search string can be found here.
     
     <h2>Core Stats</h2>
     <ul>
-      <li><a href="/app/twitter-sentiment-analysis/tweet_volume">Tweet Volume</a> - Raw Tweet Volume</li>
-      <li><a href="/app/twitter-sentiment-analysis/sentiment_for_twitter_mentions_of_anthrocon_v2">Sentiment v2</a> - Sentiment with Tweet Volume</li>
-      <li><a href="/app/twitter-sentiment-analysis/search_tweets">Search Tweets</a> - Search tweets for a string</li>
-      <li><a href="/app/twitter-sentiment-analysis/tag_clouds">Tag Clouds</a> - Get some pretty tag clouds!</li>
-      <li><a href="/app/twitter-sentiment-analysis/twitter_stats">Twitter Stats</a> - How many tweets do we have, and over what time range?</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/tweet_volume">Tweet Volume</a> - Raw Tweet Volume</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/sentiment_for_twitter_mentions_of_anthrocon_v2">Sentiment v2</a> - Sentiment with Tweet Volume</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/search_tweets">Search Tweets</a> - Search tweets for a string</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/tag_clouds">Tag Clouds</a> - Get some pretty tag clouds!</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/twitter_stats">Twitter Stats</a> - How many tweets do we have, and over what time range?</li>
 
     </ul>
     
     <h2>More Stats</h2>
     <ul>
-      <li><a href="/app/twitter-sentiment-analysis/sentiment">Sentiment</a> - Sentiment of Tweets mentioning our search string </li>
-      <li><a href="/app/twitter-sentiment-analysis/export_tweets">Export Tweets</a> - Search tweets to export</li>
-      <li><a href="/app/twitter-sentiment-analysis/sentiment_breakdown_by_department">Sentiment Breakdown by Keyword</a> - See how various keywords are doing!</li>
-      <li><a href="/app/twitter-sentiment-analysis/top_promoters_and_detractors">Top Promoters and Detractors</a></li>
-      <li><a href="/app/twitter-sentiment-analysis/user_tweet_report">User Tweet Report</a> - Type in a name, get a Tweet report on a user.</li>
-      <li><a href="/app/twitter-sentiment-analysis/net_sentiment_score">Net Sentiment Score</a> - Net Sentiment Score (Percent positive minus negative) over time</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/sentiment">Sentiment</a> - Sentiment of Tweets mentioning our search string </li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/export_tweets">Export Tweets</a> - Search tweets to export</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/sentiment_breakdown_by_department">Sentiment Breakdown by Keyword</a> - See how various keywords are doing!</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/top_promoters_and_detractors">Top Promoters and Detractors</a>
+          </li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/user_tweet_report">User Tweet Report</a> - Type in a name, get a Tweet report on a user.</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/net_sentiment_score">Net Sentiment Score</a> - Net Sentiment Score (Percent positive minus negative) over time</li>
     </ul>
 
 <h2>Advanced</h2>
 <ul>
-  <li><a href="/app/twitter-sentiment-analysis/search">Manual Search</a> - Perform a manual search on the data. Docs on Splunk's Search Processing Langauage (SPL) <a href="http://docs.splunk.com/Documentation/Splunk/7.1.2/Search/Aboutthesearchlanguage">Can be found here!</a></li>
+  <li>
+            <a href="/app/twitter-sentiment-analysis/search">Manual Search</a> - Perform a manual search on the data. Docs on Splunk's Search Processing Langauage (SPL) <a href="http://docs.splunk.com/Documentation/Splunk/7.1.2/Search/Aboutthesearchlanguage">Can be found here!</a>
+          </li>
 </ul>
 
 
     <h2>System</h2>
     <ul>
-      <li><a href="/app/twitter-sentiment-analysis/errors">Errors</a> - Errors executing the scripts which pull and analyze tweets.</li>
-      <li><a href="/app/twitter-sentiment-analysis/service_status">Service Status</a> - Status of the Docker Services and Twitter API</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/errors">Errors</a> - Errors executing the scripts which pull and analyze tweets.</li>
+      <li>
+            <a href="/app/twitter-sentiment-analysis/service_status">Service Status</a> - Status of the Docker Services and Twitter API</li>
     </ul>
   </html>
+    </panel>
   </row>
-
-<row>
-  <html>
+  <row>
+    <panel>
+      <title>Number of Tweets in Last 24 Hours</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" | stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">Tweets</option>
+        <option name="useColors">0</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Positive Tweets in Last 24 Hours</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" tweet="*" sentiment="POSITIVE" | stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">Tweets</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Negative Tweets in Last 24 Hours</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" tweet="*" sentiment="NEGATIVE" | stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xdc4e41","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">Tweets</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Oldest Tweet</title>
+      <single>
+        <search>
+          <query>index=main sourcetype="3-tweets-export-log" | tail 1 | reltime | table reltime | rename reltime to Date</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
     <h2>Further Reading</h2>
     <ul>
-      <li><a href="https://github.com/dmuth/twitter-sentiment-analysis/tree/master">Source Code</a> - This app is available as open source software, get your free copy here!</li>
-      <li><a href="http://docs.splunk.com/Documentation/Splunk">Splunk Documentation</a></li>
+      <li>
+            <a href="https://github.com/dmuth/twitter-sentiment-analysis/tree/master">Source Code</a> - This app is available as open source software, get your free copy here!</li>
+      <li>
+            <a href="http://docs.splunk.com/Documentation/Splunk">Splunk Documentation</a>
+          </li>
     </ul>
     
   </html>
-  
-</row>
-
-
-
+    </panel>
+  </row>
 </dashboard>
