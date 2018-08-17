@@ -72,7 +72,7 @@ modtime = 1530151943.864392000
 [views/twitter_stats]
 owner = admin
 version = 7.1.1
-modtime = 1530914056.926712000
+modtime = 1534474291.641952000
 
 [views/net_sentiment_score]
 export = none

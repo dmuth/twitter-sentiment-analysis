@@ -4,8 +4,8 @@
     <input type="time" token="field1">
       <label></label>
       <default>
-        <earliest>-24h@h</earliest>
-        <latest>now</latest>
+        <earliest>0</earliest>
+        <latest></latest>
       </default>
     </input>
   </fieldset>
@@ -28,76 +28,58 @@
   </row>
   <row>
     <panel>
-      <title>Latest Tweet</title>
-      <table>
+      <title>Earliest Tweet</title>
+      <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | head 1 | fields _time | table _time</query>
+          <query>index=main sourcetype="3-tweets-export-log" | tail 1 | convert timeformat="%b %d, %Y %H:%M:%S" ctime(_time) AS Date | table Date</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
-      </table>
+      </single>
     </panel>
     <panel>
       <title>Latest Tweet</title>
-      <table>
+      <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | head 1 | reltime | table reltime</query>
+          <query>index=main sourcetype="3-tweets-export-log" | head 1 | fields _time  | convert timeformat="%b %d, %Y %H:%M:%S" ctime(_time) AS Date | table Date</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
-        <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
-        <option name="percentagesRow">false</option>
         <option name="refresh.display">progressbar</option>
-        <option name="rowNumbers">false</option>
-        <option name="totalsRow">false</option>
-        <option name="wrap">true</option>
-      </table>
+      </single>
     </panel>
   </row>
   <row>
     <panel>
       <title>Earliest Tweet</title>
-      <table>
+      <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | tail 1 | table _time</query>
+          <query>index=main sourcetype="3-tweets-export-log" | tail 1 | reltime | table reltime |rename reltime to Date</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
-        <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
-        <option name="percentagesRow">false</option>
         <option name="refresh.display">progressbar</option>
-        <option name="rowNumbers">false</option>
-        <option name="totalsRow">false</option>
-        <option name="wrap">true</option>
-      </table>
+      </single>
     </panel>
     <panel>
-      <title>Earliest Tweet</title>
-      <table>
+      <title>Latest Tweet</title>
+      <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | tail 1 | reltime | table reltime</query>
+          <query>index=main sourcetype="3-tweets-export-log" | head 1 | reltime | table reltime | rename reltime to Date</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
-        <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
-        <option name="percentagesRow">false</option>
         <option name="refresh.display">progressbar</option>
-        <option name="rowNumbers">false</option>
-        <option name="totalsRow">false</option>
-        <option name="wrap">true</option>
-      </table>
+      </single>
     </panel>
   </row>
 </form>
