@@ -25,7 +25,7 @@ allows drilldown by user, topic, and search string.
 ### Setting up credentials
 
 - Get your Twitter credentials:
-   - `docker build -f ./Dockerfile-0-get-twitter-credentials -t 0-get-twitter-credentials . && docker run -v $(pwd):/mnt -it 0-get-twitter-credentials
+   - `docker build -f ./Dockerfile-0-get-twitter-credentials -t 0-get-twitter-credentials . && docker run -v $(pwd):/mnt -it 0-get-twitter-credentials`
    - Running this script will walk your through the steps, so it should be straightforward.
 - Make sure you have <a href="https://aws.amazon.com/cli/">AWS CLI</a> installed and ran `aws configure` to enter your AWS credentials.
    - Access to a single S3 bucket and AWS Comprehend will be required
