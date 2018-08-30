@@ -95,7 +95,7 @@ modtime = 1530382388.577094000
 [views/sentiment_breakdown_by_department]
 owner = admin
 version = 7.1.1
-modtime = 1530813599.325669000
+modtime = 1534904667.420331000
 
 [views/tweet_volume]
 access = read : [ * ], write : [ admin, power ]
@@ -114,4 +114,4 @@ modtime = 1531254434.279739000
 [views/hashtags]
 owner = admin
 version = 7.1.1
-modtime = 1534475402.135941000
+modtime = 1534713254.624674000
