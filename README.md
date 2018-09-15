@@ -56,6 +56,16 @@ is deleted at any point and then re-run, the passwd file will be copied into Spl
 to log back in.
 
 
+### Restoring From Backups
+
+Let's say you were running this app on your desktop/laptop (as one does in Docker...) and you're ready
+to move the app to a server, how do you take all of your data with you?
+
+This is actually pretty easy--deploy the code to your server but don't start anything.  Make sure AWS is configured.
+Then, run the script `./bin/aws-download-latest-backup`.  That will connect to AWS and download the latest backup!
+Then simply rename the file to `tweets.db`, start up the containers, and you'll be up and running!
+
+
 ## Architecture Overview
 
 The following docker containers are used:
