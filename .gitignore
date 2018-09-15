@@ -8,6 +8,7 @@ __pycache__
 # SQLite database
 tweets.db
 tweets.db-journal
+tweets-*.db
 
 # Python dev
 virtualenv/
