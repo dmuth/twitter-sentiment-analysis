@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# This script is a wrapper to the AWS CLI, which will use the AWS credentials
+# from this project.
+#
+
+
+# Errors are fatal
+set -e
+
+export AWS_CONFIG=$(dirname $0)/../aws-credentials.txt
+
+echo "# " >&2
+echo "# Executing aws with these credentials: $AWS_CONFIG" >&2
+echo "# " >&2
+
+aws $@
+
+
+

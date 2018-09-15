@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# This script is a wrapper to the AWS CLI, which will use the AWS credentials
+# from this project.
+#
+
+
+# Errors are fatal
+set -e
+
+AWS=$(dirname $0)/aws
+CONFIG=$(dirname $0)/../docker-compose.yml
+
+#
+# Grab our S3 bucket from the configuration
+#
+S3=$(cat $CONFIG |grep -- "- S3=" |grep -v "#" |head -n1 |cut -d= -f2)
+
+
+echo "# " >&2
+echo "# Getting contents of '${S3}' sorted by time..." >&2
+echo "# " >&2
+
+#
+# We'll be passing our AWS cli results into awk so that the full S3 path is printed.
+#
+AWK_SCRIPT="{ print \$1 \" \" \$2 \" \" \$3 \" ${S3}\" \$4 }"
+
+$AWS s3 ls $S3 | awk "$AWK_SCRIPT" | sort
+
+
+
