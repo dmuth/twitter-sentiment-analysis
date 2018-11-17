@@ -7,6 +7,7 @@ RUN apk update
 RUN apk add bash
 RUN apk add python3
 RUN pip3 install awscli
+RUN apk add tzdata
 
 RUN mkdir /root/.aws/
 
