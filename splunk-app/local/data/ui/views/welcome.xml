@@ -9,7 +9,7 @@
     <h2>Core Stats</h2>
     <ul>
       <li>
-            <a href="/app/twitter-sentiment-analysis/sentiment_for_twitter_mentions_of_anthrocon_v2">Sentiment v2</a> - Sentiment with Tweet Volume</li>
+            <a href="/app/twitter-sentiment-analysis/sentiment_for_twitter_mentions_v2">Sentiment v2</a> - Sentiment with Tweet Volume</li>
       <li>
             <a href="/app/twitter-sentiment-analysis/tag_clouds">Tag Clouds</a> - Get some pretty tag clouds!</li>
       <li>
