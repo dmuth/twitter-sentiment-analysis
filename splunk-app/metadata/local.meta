@@ -41,11 +41,6 @@ owner = admin
 version = 7.1.1
 modtime = 1529700689.074495000
 
-[views/sentiment_for_twitter_mentions_of_anthrocon_v2]
-owner = admin
-version = 7.1.1
-modtime = 1534474406.366562000
-
 [views/top_promoters_and_detractors]
 access = read : [ * ], write : [ admin, power ]
 export = none
@@ -85,7 +80,7 @@ access = read : [ * ], write : [ power ]
 export = none
 owner = admin
 version = 7.1.1
-modtime = 1534546047.933303000
+modtime = 1544492376.783155000
 
 [views/tag_clouds]
 owner = admin
@@ -115,3 +110,10 @@ modtime = 1531254434.279739000
 owner = admin
 version = 7.1.1
 modtime = 1534713254.624674000
+
+[views/sentiment_for_twitter_mentions_v2]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = admin
+version = 7.1.1
+modtime = 1544492339.648356000
