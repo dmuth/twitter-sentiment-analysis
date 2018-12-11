@@ -41,8 +41,8 @@ allows drilldown by user, topic, and search string.
                 "s3:*"
             ],
             "Resource": [
-                "arn:aws:s3:::tweets/*",
-                "arn:aws:s3:::tweets"
+                "arn:aws:s3:::REPLACE_WITH_YOUR_BUCKET_NAME/*",
+                "arn:aws:s3:::REPLACE_WITH_YOUR_BUCKET_NAME"
             ]
         },
         {
