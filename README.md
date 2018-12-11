@@ -29,7 +29,34 @@ allows drilldown by user, topic, and search string.
    - Running this script will walk your through the steps, so it should be straightforward.
 - Make sure you have <a href="https://aws.amazon.com/cli/">AWS CLI</a> installed and ran `aws configure` to enter your AWS credentials.
    - Access to a single S3 bucket and AWS Comprehend will be required
-   - Note that if you create a policy for your IAM credentials (as you should!), the ARN in the Resource array must end in `/*`.  Exammple: `arn:aws:s3:::tweets/*`. There is a byg in the policy generator where this won't happen and your backups will fail.  Be careful
+   - I recommend creating an IAM user with the "ComprehendFullAccess" policy as well as an S3 policy tha tlooks like this:
+   ```
+   {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::REPLACE_WITH_YOUR_BUCKET_NAME/*",
+                "arn:aws:s3:::REPLACE_WITH_YOUR_BUCKET_NAME"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:HeadBucket"
+            ],
+            "Resource": "*"
+        }
+    ]
+   }
+   ```
 
 
 ### Running the app
