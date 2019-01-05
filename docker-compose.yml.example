@@ -25,7 +25,7 @@ services:
       #
       - STRING=linux
       #- STRING=linux,redhat,red hat
-      - TZ=America/New_York
+      - TZ=EST5
       #
       # We set this to a really high number to start with, because on the 
       # first pass, many tweets might be fetched.
@@ -49,7 +49,7 @@ services:
     volumes:
       - ./..:/mnt
     environment:
-      - TZ=America/New_York
+      - TZ=EST5
       - NUM=500
       - LOOP_SECONDS=60
       #- FAKE=1 # Set to fake doing analysis on tweets
@@ -64,7 +64,7 @@ services:
     volumes:
       - ./..:/mnt
     environment:
-      - TZ=America/New_York
+      - TZ=EST5
       - NUM=1000
       - LOOP_SECONDS=10
       - DEBUG=1 # Set to print output in the foreground
@@ -90,7 +90,7 @@ services:
     ports:
       - 8000:8000
     environment:
-      - TZ=America/New_York
+      - TZ=EST5
 
   twitter-4-backup:
     build:
@@ -101,7 +101,7 @@ services:
     volumes:
       - ./..:/mnt
     environment:
-      - TZ=America/New_York
+      - TZ=EST5
       #
       # A word of caution: the S3 base path *MUST* end in a slash.  This is because
       # slashes in S3 aren't really directory separators, but just part of the key, and
