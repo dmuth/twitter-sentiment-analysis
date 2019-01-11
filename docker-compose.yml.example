@@ -53,6 +53,7 @@ services:
       - NUM=500
       - LOOP_SECONDS=60
       #- FAKE=1 # Set to fake doing analysis on tweets
+      #- SKIP=99 # For every tweet we analyze/fake, skip this many.  Helpful for high volume streams.
       - DEBUG=1 # Set to print output in the foreground
    
   twitter-3-export-tweets:
