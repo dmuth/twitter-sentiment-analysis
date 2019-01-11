@@ -44,7 +44,7 @@ skip_left = args.skip
 # We're skipping an analysis of the tweet, so just have plain values here.
 #
 def getSkipAnalysis():
-	retval = {"Sentiment": "skipped", "Score": { "Positive": 0, "Negative": 0, "Mixed": 0, "Neutral": 0 } }
+	retval = {"Sentiment": "skipped", "SentimentScore": { "Positive": 0, "Negative": 0, "Mixed": 0, "Neutral": 0 } }
 	return(retval)
 
 
@@ -71,10 +71,10 @@ def getFakeAnalysis(tweets, skip):
 	# Fake sentiment values, which are rotated through.
 	#
 	values = [ 
-		{"Sentiment": "fake_POSITIVE", "Score": { "Positive": 0.9, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.5 } },
-		{"Sentiment": "fake_NEGATIVE", "Score": { "Positive": 0.5, "Negative": 0.9, "Mixed": 0.5, "Neutral": 0.5 } },
-		{"Sentiment": "fake_MIXED", "Score": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.9, "Neutral": 0.5 } },
-		{"Sentiment": "fake_NEUTRAL", "Score": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.9 } }
+		{"Sentiment": "fake_POSITIVE", "SentimentScore": { "Positive": 0.9, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.5 } },
+		{"Sentiment": "fake_NEGATIVE", "SentimentScore": { "Positive": 0.5, "Negative": 0.9, "Mixed": 0.5, "Neutral": 0.5 } },
+		{"Sentiment": "fake_MIXED", "SentimentScore": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.9, "Neutral": 0.5 } },
+		{"Sentiment": "fake_NEUTRAL", "SentimentScore": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.9 } }
 		]
                        
 	#
@@ -110,7 +110,7 @@ def getFakeAnalysis(tweets, skip):
 		results.append({
 			"Index": index, 
 			"Sentiment": fake_sentiment_value["Sentiment"],
-			"SentimentScore": fake_sentiment_value["Score"]
+			"SentimentScore": fake_sentiment_value["SentimentScore"]
 			})
 		index += 1
 
@@ -130,13 +130,75 @@ def getFakeAnalysis(tweets, skip):
 #
 def analyze(comprehend, batch, fake, skip):
 
+	global skip_left
+
 	logger.info("Analyzing batch of %d tweets..." % len(batch))
 	tweets = [row["tweet"] for row in batch]
 
 	if fake:
 		results = getFakeAnalysis(tweets, skip)
 
+	elif skip:
+		#
+		# Oh, we're skipping?  Okay, first step is to grab skip data for every tweet.
+		# Then we're going to want to pull the tweets we want to analyze, do so,
+		# and then put them back into the results, overwriting the skip data.
+		#
+		index = 0
+		results = []
+
+		#
+		# Get skip data and stick in a fake Index value that Amazon would have returned.
+		#
+		for row in tweets:
+			result = getSkipAnalysis()
+			result["Index"] = index
+			results.append(result)
+			index += 1
+
+		#
+		# Get indexes of tweets to keep.
+		#
+		tweet_indexes = []
+		index = 0
+		for row in tweets:
+
+			if (skip_left > 0):
+				skip_left -= 1
+
+			else:
+				tweet_indexes.append(index)
+				skip_left = skip
+
+			index += 1
+
+		# 
+		# Now pull those tweets and analyze them
+		#
+		tweets_real = []
+		for index in tweet_indexes:
+			tweet = tweets[index]
+			tweets_real.append(tweet)
+
+		aws_results = comprehend.batch_detect_sentiment(TextList = tweets_real, LanguageCode='en')
+		aws_results = aws_results["ResultList"]
+
+		#
+		# Now that we have analyzed tweets, go back through the array of tweets 
+		# we want to keep, grab the results that AWS gave us, and overwrite them onto
+		# the original array of tweets.
+		#
+		index = 0
+		for row in aws_results:
+			tweet_index = tweet_indexes[index]
+			tweet = tweets[tweet_index]
+			results[tweet_index]["Sentiment"] = row["Sentiment"]
+			results[tweet_index]["SentimentScore"] = row["SentimentScore"]
+
+			index += 1
+
 	else:
+
 		results = comprehend.batch_detect_sentiment(TextList = tweets, LanguageCode='en')
 		results = results["ResultList"]
 
