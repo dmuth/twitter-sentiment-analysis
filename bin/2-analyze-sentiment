@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Vim: :set softtabstop=0 noexpandtab tabstop=8 
+# Vim: :set softtabstop=0 noexpandtab tabstop=4
 
 import argparse
 import boto3
@@ -112,6 +112,12 @@ def writeResults(sql, batch):
 #
 def main(args):
 
+        #
+        # Flush stdout as that doesn't seem to happen regularly in Docker.
+        # This is mostly of use when debugging.
+        #
+	sys.stdout.flush()
+
 	comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 
 	#
@@ -163,14 +169,15 @@ def main(args):
 
 	logger.info("ok=1")
 
-	#
-	# Turns out that when this is run as a service in systemd with output redirected, 
-	# it is not flushed regularly, and stopping the service loses the output.  Awesome!
-	#
+        #
+        # Flush stdout as that doesn't seem to happen regularly in Docker
+        # This is mostly of use when debugging.
+        #
 	sys.stdout.flush()
 
 if not args.loop:
 	main(args)
+
 else:
 	while True:
 		main(args)
