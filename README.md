@@ -144,11 +144,11 @@ To attach to the running Splunk instance for troubleshooting:
 Do you want an interactive `bash` shell so that you can instead stay in the container and run the script repeatedly?
 Here, try these commands:
 
-- `export C="1-fetch-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
-- `export C="2-analyze-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
-- `export C="3-export-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
-- `export C="4-splunk"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
-- `export C="4-backup"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
+- `export C="1-fetch-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash; docker-compose kill $C`
+- `export C="2-analyze-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash; docker-compose kill $C`
+- `export C="3-export-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash; docker-compose kill $C`
+- `export C="4-splunk"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash; docker-compose kill $C`
+- `export C="4-backup"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash; docker-compose kill $C`
 
 
 ### Resetting The App
