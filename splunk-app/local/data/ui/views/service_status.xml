@@ -113,7 +113,7 @@
       </chart>
     </panel>
     <panel>
-      <title>Number of Tweets Analyzed by AWS Comphrehend</title>
+      <title>Number of Tweets Analyzed by AWS Comprehend</title>
       <chart>
         <search>
           <query>index=main sourcetype="2-tweets-analyze-stderr" |timechart span=$span$ sum(total_tweets_analyzed) AS "Tweets Analyzed"</query>
