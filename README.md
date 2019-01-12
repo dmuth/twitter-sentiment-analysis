@@ -175,8 +175,8 @@ if a lot of tweets are being processed.
 ## TODO
 
 - Write up some "priming instructions" for large tweet volumes
-- Allow multiple search terms (comma-delimited?)
-- Rename the dashboard files to remove "Anthrocon"
+- Consider adding in MySQL because of file access conflicts
+- Redo the skip code to be once at the top level of the script.
 
 
 ## Contact
