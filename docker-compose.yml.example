@@ -6,7 +6,7 @@ services:
   twitter-1-fetch-tweets:
     build:
       context: .
-      dockerfile: "Dockerfile-1-fetch-tweets"
+      dockerfile: "docker/Dockerfile-1-fetch-tweets"
     restart: "always"
     privileged: true
     volumes:
@@ -43,7 +43,7 @@ services:
   twitter-2-analyze-tweets:
     build:
       context: .
-      dockerfile: "Dockerfile-2-analyze-tweets"
+      dockerfile: "docker/Dockerfile-2-analyze-tweets"
     restart: "always"
     privileged: true
     volumes:
@@ -59,7 +59,7 @@ services:
   twitter-3-export-tweets:
     build:
       context: .
-      dockerfile: "Dockerfile-3-export-tweets"
+      dockerfile: "docker/Dockerfile-3-export-tweets"
     restart: "always"
     privileged: true
     volumes:
@@ -73,7 +73,7 @@ services:
   twitter-4-splunk:
     build:
       context: .
-      dockerfile: "Dockerfile-4-splunk"
+      dockerfile: "docker/Dockerfile-4-splunk"
     restart: "always"
     privileged: true
     volumes:
@@ -96,7 +96,7 @@ services:
   twitter-4-backup:
     build:
       context: .
-      dockerfile: "Dockerfile-4-backup"
+      dockerfile: "docker/Dockerfile-4-backup"
     restart: "always"
     privileged: true
     volumes:
