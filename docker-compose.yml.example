@@ -3,7 +3,7 @@ version: "3"
 
 services:
 
-  twitter-1-fetch-tweets:
+  1-fetch-tweets:
     build:
       context: .
       dockerfile: "docker/Dockerfile-1-fetch-tweets"
@@ -40,7 +40,7 @@ services:
       - RESULT_TYPE=mixed
       - DEBUG=1 # Set to print output in the foreground
 
-  twitter-2-analyze-tweets:
+  2-analyze-tweets:
     build:
       context: .
       dockerfile: "docker/Dockerfile-2-analyze-tweets"
@@ -56,7 +56,7 @@ services:
       #- SKIP=99 # For every tweet we analyze/fake, skip this many.  Helpful for high volume streams.
       - DEBUG=1 # Set to print output in the foreground
    
-  twitter-3-export-tweets:
+  3-export-tweets:
     build:
       context: .
       dockerfile: "docker/Dockerfile-3-export-tweets"
@@ -70,7 +70,7 @@ services:
       - LOOP_SECONDS=10
       - DEBUG=1 # Set to print output in the foreground
     
-  twitter-4-splunk:
+  4-splunk:
     build:
       context: .
       dockerfile: "docker/Dockerfile-4-splunk"
@@ -93,7 +93,7 @@ services:
     environment:
       - TZ=EST5
 
-  twitter-4-backup:
+  4-backup:
     build:
       context: .
       dockerfile: "docker/Dockerfile-4-backup"
