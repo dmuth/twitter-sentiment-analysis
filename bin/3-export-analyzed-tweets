@@ -91,7 +91,7 @@ def main(args):
 	logger.info("Fetching %d rows..." % (args.num) )
 	results = sql.execute(query)
 
-	logger.info("Updating %d rows as exported..." % (args.num))
+	logger.info("Exporting %d rows..." % (args.num))
 	query_update = "UPDATE tweets SET exported=1 WHERE rowid=?"
 
 	count = 0
