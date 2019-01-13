@@ -88,8 +88,10 @@ def main(args):
 		"ORDER BY tweet_id "
 		"LIMIT %d" % (exported, args.num)
                 )
+	logger.info("Fetching %d rows..." % (args.num) )
 	results = sql.execute(query)
 
+	logger.info("Exporting %d rows..." % (args.num))
 	query_update = "UPDATE tweets SET exported=1 WHERE rowid=?"
 
 	count = 0
