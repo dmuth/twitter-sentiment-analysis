@@ -178,6 +178,7 @@ if a lot of tweets are being processed.
 - Consider adding in MySQL because of file access conflicts
 - Redo the skip code to be once at the top level of the script.
 - Better timezone handling.  EST5EDT does *not* play nice during standard time.
+- Performance of `3-export-tweets` is very bad on OS/X. `com.docker.osfx` eats up a lot of CPU.  See if it's all the writes to SQLite or the log file that are triggering it.
 
 
 ## Contact
