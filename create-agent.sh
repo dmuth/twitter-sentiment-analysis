@@ -53,17 +53,26 @@ echo "# "
 cd agents/${NAME}
 
 
+echo "# "
+echo "# Symlinking Dockerfiles..."
+echo "# "
 ln -sf ../../Dockerfile-0-get-twitter-credentials .
 ln -sf ../../Dockerfile-1-fetch-tweets .
 ln -sf ../../Dockerfile-2-analyze-tweets .
 ln -sf ../../Dockerfile-3-export-tweets .
 ln -sf ../../Dockerfile-4-backup .
 
+echo "# "
+echo "# Smylinking logs directory..."
+echo "# "
 ln -sf ../../logs/${NAME} logs
 
+echo "# "
+echo "# Writing docker-compose.yml..."
+echo "# "
 cat ../../docker-compose.yml.agent \
 	| sed -e "s/%%SEARCH%%/${SEARCH}/" -e "s#%%S3%%#${S3}#" \
 	> docker-compose.yml
 
-
+echo "# Done!"
 
