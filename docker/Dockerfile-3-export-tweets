@@ -6,6 +6,7 @@ WORKDIR /mnt
 RUN apk update
 RUN apk add bash
 RUN apk add python3
+RUN apk add tzdata
 
 COPY requirements.txt /mnt/
 RUN pip3 install -r /mnt/requirements.txt

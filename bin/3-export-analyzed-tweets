@@ -2,7 +2,7 @@
 #
 # Grab our Tweets from the database and print them to standard output.
 #
-# Vim: :set softtabstop=0 noexpandtab tabstop=8
+# Vim: :set softtabstop=4 noexpandtab tabstop=4
 
 import argparse
 import json
@@ -47,8 +47,12 @@ def getTweetString(tweet):
 
 	#
 	# Replace newlines with spaces, Splunk strongly prefers to have one event per line
+	# Also escape doublequotes.
 	#
-	tweet_string = tweet["tweet"].replace("\n", " ").replace("\r", " ")
+	# In the future, I might turn this into JSON just so I don't have to deal with 
+	# having to escape everything.
+	#
+	tweet_string = tweet["tweet"].replace("\n", " ").replace("\r", " ").replace('"', r'\"')
 	retval += " tweet=\"%s\"" % tweet_string
 	retval += " sentiment=\"%s\"" % tweet["sentiment"]
 
@@ -86,8 +90,10 @@ def main(args):
 		"ORDER BY tweet_id "
 		"LIMIT %d" % (exported, args.num)
                 )
+	logger.info("Fetching %d rows..." % (args.num) )
 	results = sql.execute(query)
 
+	logger.info("Exporting %d rows..." % (args.num))
 	query_update = "UPDATE tweets SET exported=1 WHERE rowid=?"
 
 	count = 0

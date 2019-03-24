@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Vim: :set softtabstop=0 noexpandtab tabstop=8 
+# Vim: :set softtabstop=4 noexpandtab tabstop=4
 
 import argparse
 import boto3
@@ -25,8 +25,169 @@ logging.config.fileConfig("logging_config.ini", disable_existing_loggers = True)
 parser = argparse.ArgumentParser(description = "Analyze crawled text")
 parser.add_argument("-n", "--num", type = int, help = "How many tweets to analyze? (Default: 5)", default = 5)
 parser.add_argument("--fake", action = "store_true", help = "Fake AWS calls")
+parser.add_argument("--skip", type = int, help = "How many tweets to skip after every analyzed/fake tweet? (Default: 0)", default = 0)
 parser.add_argument("--loop", type = int, help = "Loop after sleeping for N seconds")
 args = parser.parse_args()
+
+#print("Debug Args:", args); sys.exit(1) # Debugging
+
+#
+# A global variable that holds how many tweets are left to skip.
+# This is a little dumb, but was added late in the game.  If I were
+# to start over, I might put all the code into a class instead.
+#
+skip_left = args.skip
+
+
+
+#
+# We're skipping an analysis of the tweet, so just have plain values here.
+#
+def getSkipData():
+	retval = {"Sentiment": "skipped", "SentimentScore": { "Positive": 0, "Negative": 0, "Mixed": 0, "Neutral": 0 } }
+	return(retval)
+
+
+#
+# Get fake analysis for a series of tweets, with optional skipping!
+#
+# @param tweets batch - Array of tweets
+# @param integer skip - Are we skipping analysis/faking?  If so, this 
+#   value is non-zero and is the number of tweets skipped each time.
+#
+def getFakeAnalysis(tweets, skip):
+	
+	#
+	# Yeah, this is a global variable.  I am *really* not proud of this.
+	#
+	global skip_left
+
+	#
+	# We're faking a call to AWS, which is useful for testing.
+	#
+	results = []
+
+	#
+	# Fake sentiment values, which are rotated through.
+	#
+	values = [ 
+		{"Sentiment": "fake_POSITIVE", "SentimentScore": { "Positive": 0.9, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.5 } },
+		{"Sentiment": "fake_NEGATIVE", "SentimentScore": { "Positive": 0.5, "Negative": 0.9, "Mixed": 0.5, "Neutral": 0.5 } },
+		{"Sentiment": "fake_MIXED", "SentimentScore": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.9, "Neutral": 0.5 } },
+		{"Sentiment": "fake_NEUTRAL", "SentimentScore": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.9 } }
+		]
+                       
+	#
+	# Now loop through our tweets, grab a different sentiment for each, and store the results.
+	#
+	index = 0
+	for row in tweets:
+
+		if (skip):
+			
+			#
+			# If there are tweets left to skip, get the skip data and decrement the counter.
+			#
+			if (skip_left > 0):
+				fake_sentiment_value = getSkipData()
+				skip_left -= 1
+
+			else:
+				#
+				# If we went through our current amount of tweets to skip,
+				# grab a fake sentiment value instead and reset the skip counter.
+				#
+				fake_sentiment_value = values[index % 4]
+				skip_left = skip
+
+
+		else: 
+			#
+			# Not skipping?  Oh, okay.  Just grab the fake sentiment value!
+			#
+			fake_sentiment_value = values[index % 4]
+
+		results.append({
+			"Index": index, 
+			"Sentiment": fake_sentiment_value["Sentiment"],
+			"SentimentScore": fake_sentiment_value["SentimentScore"]
+			})
+		index += 1
+
+	return(results)
+
+
+#
+# Hit the AWS Comprehend endpoint, but skip tweets.
+#
+# @param object comprehend - Object that lets us connect to AWS
+# @param tweets batch - Array of tweets
+# @param integer skip - Are we skipping analysis/faking?  If so, this 
+#   value is non-zero and is the number of tweets skipped each time.
+#
+def getSkipAnalysis(comprehend, tweets, skip):
+
+	global skip_left
+
+	#
+	# Oh, we're skipping?  Okay, first step is to grab skip data for every tweet.
+	# Then we're going to want to pull the tweets we want to analyze, do so,
+	# and then put them back into the results, overwriting the skip data.
+	#
+	index = 0
+	results = []
+
+	#
+	# Get skip data and stick in a fake Index value that Amazon would have returned.
+	#
+	for row in tweets:
+		result = getSkipData()
+		result["Index"] = index
+		results.append(result)
+		index += 1
+
+	#
+	# Get indexes of tweets to keep.
+	#
+	tweet_indexes = []
+	index = 0
+	for row in tweets:
+
+		if (skip_left > 0):
+			skip_left -= 1
+
+		else:
+			tweet_indexes.append(index)
+			skip_left = skip
+
+		index += 1
+
+	# 
+	# Now pull those tweets and analyze them
+	#
+	tweets_real = []
+	for index in tweet_indexes:
+		tweet = tweets[index]
+		tweets_real.append(tweet)
+
+	aws_results = comprehend.batch_detect_sentiment(TextList = tweets_real, LanguageCode='en')
+	aws_results = aws_results["ResultList"]
+
+	#
+	# Now that we have analyzed tweets, go back through the array of tweets 
+	# we want to keep, grab the results that AWS gave us, and overwrite them onto
+	# the original array of tweets.
+	#
+	index = 0
+	for row in aws_results:
+		tweet_index = tweet_indexes[index]
+		tweet = tweets[tweet_index]
+		results[tweet_index]["Sentiment"] = row["Sentiment"]
+		results[tweet_index]["SentimentScore"] = row["SentimentScore"]
+
+		index += 1
+
+	return(results)
 
 
 #
@@ -35,53 +196,32 @@ args = parser.parse_args()
 # @param object comprehend - Object that lets us connect to AWS
 # @param list batch - Array of tweets
 # @param boolean fake - Are we faking calling Amazon?
+# @param integer skip - Are we skipping analysis/faking?  If so, this 
+#   value is non-zero and is the number of tweets skipped each time.
 #
 # @return array An array of dictionaries where each element is the tweet_id, tweet, and sentiment.
 #
-def analyze(comprehend, batch, fake):
+def analyze(comprehend, batch, fake, skip):
 
 	logger.info("Analyzing batch of %d tweets..." % len(batch))
 	tweets = [row["tweet"] for row in batch]
 
 	if fake:
-		#
-		# We're faking a call to AWS, which is useful for testing.
-		#
-		results = []
+		results = getFakeAnalysis(tweets, skip)
 
-		#
-		# Fake sentiment values
-		#
-		values = [ 
-			{"Sentiment": "POSITIVE", "Score": { "Positive": 0.9, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.5 } },
-			{"Sentiment": "NEGATIVE", "Score": { "Positive": 0.5, "Negative": 0.9, "Mixed": 0.5, "Neutral": 0.5 } },
-			{"Sentiment": "MIXED", "Score": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.9, "Neutral": 0.5 } },
-			{"Sentiment": "NEUTRAL", "Score": { "Positive": 0.5, "Negative": 0.5, "Mixed": 0.5, "Neutral": 0.9 } }
-			]
-                       
-		#
-		# Now loop through our tweets, grab a different sentiment for each, and store the results.
-		#
-		index = 0
-		for row in tweets:
-
-			fake_sentiment_value = values[index % 4]
-
-			results.append({
-				"Index": index, 
-				"Sentiment": fake_sentiment_value["Sentiment"],
-				"SentimentScore": fake_sentiment_value["Score"]
-				})
-			index += 1
+	elif skip:
+		results = getSkipAnalysis(comprehend, tweets, skip)
 
 	else:
+
 		results = comprehend.batch_detect_sentiment(TextList = tweets, LanguageCode='en')
 		results = results["ResultList"]
 
 
 	#
-	# Go through our results (real or fake), and put them into a common data structure
-	# which is then returned.
+	# Go through our results (real or fake), insert them back into the batch 
+	# (which contains the rest of the data on that tweet, such as username), 
+	# and return the modified batch.
 	#
 	for result in results:
 
@@ -112,6 +252,12 @@ def writeResults(sql, batch):
 #
 def main(args):
 
+	#
+	# Flush stdout as that doesn't seem to happen regularly in Docker.
+	# This is mostly of use when debugging.
+	#
+	sys.stdout.flush()
+
 	comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 
 	#
@@ -120,12 +266,14 @@ def main(args):
 	sql = db.db()
 	sql.conn.row_factory = sqlite3.Row
 
+	#
+	# While it shouldn't matter, we're grabbing these tweets in order, because it
+	# makes it much easier to audit the logic for skipping.
+	#
 	query = ("SELECT rowid, tweet_id, tweet FROM tweets "
 		"WHERE "
-		#
-		# This allows us to run on tweets that were previously fake-analyzed.
-		#
-		"(sentiment = '' OR sentiment LIKE 'TEST%%') "
+		"(sentiment = '') "
+		"ORDER BY tweet_id "
 		"LIMIT %d " % (args.num))
 	results = sql.execute(query)
 
@@ -138,9 +286,11 @@ def main(args):
 
 	for row in results:
 	
+		#
+        # Hit our batch size?  Analyze it.
+        #
 		if len(batch) >= batch_size:
-		
-			batch = analyze(comprehend, batch, args.fake)
+			batch = analyze(comprehend, batch, args.fake, args.skip)
 			writeResults(sql, batch)
 			num_analyzed += len(batch)
 			batch = []
@@ -150,10 +300,14 @@ def main(args):
 			"tweet": row["tweet"]
 			})
 	
+	#
+	# Analyze whatever might be left.
+	#
 	if batch:
-		batch = analyze(comprehend, batch, args.fake)
+		batch = analyze(comprehend, batch, args.fake, args.skip)
 		writeResults(sql, batch)
 		num_analyzed += len(batch)
+
 
 	cost = 0.0003 * num_analyzed
 	logger.info("total_tweets_analyzed=%d" % num_analyzed)
@@ -164,13 +318,14 @@ def main(args):
 	logger.info("ok=1")
 
 	#
-	# Turns out that when this is run as a service in systemd with output redirected, 
-	# it is not flushed regularly, and stopping the service loses the output.  Awesome!
+	# Flush stdout as that doesn't seem to happen regularly in Docker
+	# This is mostly of use when debugging.
 	#
 	sys.stdout.flush()
 
 if not args.loop:
 	main(args)
+
 else:
 	while True:
 		main(args)

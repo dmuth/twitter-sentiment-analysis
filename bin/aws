@@ -8,10 +8,10 @@
 # Errors are fatal
 set -e
 
-export AWS_CONFIG=$(dirname $0)/../aws-credentials.txt
+export AWS_CONFIG_FILE=$(dirname $0)/../aws-credentials.txt
 
 echo "# " >&2
-echo "# Executing aws with these credentials: $AWS_CONFIG" >&2
+echo "# Executing aws with these credentials: $AWS_CONFIG_FILE" >&2
 echo "# " >&2
 
 aws $@

@@ -31,6 +31,12 @@ then
 	STDERR=/dev/stderr
 fi
 
+if test "$SKIP"
+then
+	echo "##### SKIP MODE ENABLED: Skipping every ${SKIP} tweets."
+	ARGS="${ARGS} --skip ${SKIP}"
+fi
+
 
 AWS_CREDS=/mnt/aws-credentials.txt
 if test ! -f $AWS_CREDS
@@ -47,7 +53,7 @@ cp $AWS_CREDS $HOME/.aws/credentials
 echo "# "
 echo "# Starting Tweet analysis script"
 echo "# "
-echo "# Available env vars: NUM, LOOP_SECONDS, FAKE"
+echo "# Available env vars: NUM, LOOP_SECONDS, FAKE, SKIP"
 echo "# "
 echo "# Number of tweets to analyze per loop: ${NUM}"
 echo "# "

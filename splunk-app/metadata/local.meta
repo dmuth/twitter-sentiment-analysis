@@ -115,3 +115,10 @@ modtime = 1553468202.177163000
 owner = admin
 version = 7.1.1
 modtime = 1534713254.624674000
+
+[views/sentiment_for_twitter_mentions_v2]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = admin
+version = 7.1.1
+modtime = 1544492339.648356000
