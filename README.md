@@ -5,13 +5,16 @@ This app makes use of Twitter's API and AWS Comprehend to get insights about you
 city, event, or convention by way of analyzing tweet sentiment.  It further
 allows drilldown by user, topic, and search string.
 
+NOTE: I am sorry at this app is as complex as it's gotten.  This is due to some busines
+
 
 ## Requirements
 
+- A Twitter app (created at <a href="$C && docker-compose run $C bash">https://developer.twitter.com/en/apps</a>)
 - Twitter credentials (these can be created on the fly when running the first script)
 - AWS Credentials
 - Working knowledge of <a href="http://splunk.com/">Splunk</a>.  There is some documentation <a href="http://docs.splunk.com/Documentation/Splunk/7.1.2/SearchTutorial/WelcometotheSearchTutorial">here</a>, but existing dashboards should be enough to get you started.
-- Docker (optional)
+- Docker
 
 
 ## Screenshots
@@ -22,7 +25,20 @@ allows drilldown by user, topic, and search string.
 ## Installation
 
 
-### Setting up credentials
+### Setting up an Agent
+
+Because I've had a need to pull in different search queries and keep them separate, tweets
+are pulled by one or more Agents.  Agents are created with the `create-agent.sh` script
+as follows:
+
+`./create-agent.sh linux linux,#linux s3://YOUR_S3_BACKUP/tweets/linux/`
+
+The first argument is the name of the agent, which will then be created in `agents/linux`,
+the second argument is the search string (multiple things to search for can be separated
+by commas), and the third argument is the S3 location to backup to.  Backups are optional,
+so if there are no plans to back up, just use the default above and you'll be fine.
+
+Now, cd into your Agent directory (`agents/linux` in the previous example) and proceed as follows:
 
 - Get your Twitter credentials:
    - `docker build -f ./Dockerfile-0-get-twitter-credentials -t 0-get-twitter-credentials . && docker run -v $(pwd):/mnt -it 0-get-twitter-credentials`
@@ -30,6 +46,29 @@ allows drilldown by user, topic, and search string.
 - Make sure you have <a href="https://aws.amazon.com/cli/">AWS CLI</a> installed and ran `aws configure` to enter your AWS credentials.
    - Access to a single S3 bucket and AWS Comprehend will be required
    - Note that if you create a policy for your IAM credentials (as you should!), the ARN in the Resource array must end in `/*`.  Exammple: `arn:aws:s3:::tweets/*`. There is a byg in the policy generator where this won't happen and your backups will fail.  Be careful
+   - You can now copy your AWS credentials to the agent directory with `cp ~/.aws/credentials aws-credentials.txt`
+
+
+Running `docker-compose up -d` should start all your containers.  Look in `logs/` to see what's happening.
+
+
+### Deleting an Agent
+
+Simply run the script `delete-agent.sh` and the Agent you specify will be deleted.  This
+includes its configuration, SQLite database, and logfiles.
+
+Note that when deleting an Agent (as well as creating one), `splunk-app/default/inputs.conf`
+is rewritten the the locations of logs from all agents.
+
+
+### Setting up Splunk
+
+- Return to the root directory of this repo.
+- Copy `docker-compose.yml.example` to `docker-compose.yml` and set the port as you see fit.
+- `docker-compose up -d`
+
+Splunk should now be running on https://localhost:8000/ and ingesting logs written by
+agents.
 
 
 ### Running the app
@@ -51,7 +90,7 @@ If you create users and want them to persist between runs, you can export the pa
 
 `./bin/export-password-file-from-splunk`
 
-Running that will export the passwd file from Splukn and sstore it in `splunk-config/passwd`.  If the container
+Running that will export the passwd file from Splunk and sstore it in `splunk-config/passwd`.  If the container
 is deleted at any point and then re-run, the passwd file will be copied into Splunk so the users will be able 
 to log back in.
 
@@ -61,8 +100,8 @@ to log back in.
 Let's say you were running this app on your desktop/laptop (as one does in Docker...) and you're ready
 to move the app to a server, how do you take all of your data with you?
 
-This is actually pretty easy--deploy the code to your server but don't start anything.  Make sure AWS is configured.
-Then, run the script `./bin/aws-download-latest-backup`.  That will connect to AWS and download the latest backup!
+From an Agent, run `./bin/aws-download-latest-backup`. 
+That will connect to AWS and download the latest backup!
 Then simply rename the file to `tweets.db`, start up the containers, and you'll be up and running!
 
 
@@ -76,10 +115,10 @@ The following docker containers are used:
    - Sends tweets off to AWS to be analyzed
 - `3-export-tweets`
    - Exports analyzed Tweets from the SQLite database to disk, where they can be analyzed
-- `4-splunk`
-   - Runs Splunk.
 - `4-backup`
    - Does regular backups ofthe SQLIte database to AWS S3.
+- `4-splunk`
+   - Runs Splunk.
 
 
 ## Adding reports to Splunk
@@ -151,8 +190,6 @@ if a lot of tweets are being processed.
 ## TODO
 
 - Write up some "priming instructions" for large tweet volumes
-- Allow multiple search terms (comma-delimited?)
-- Rename the dashboard files to remove "Anthrocon"
 
 
 ## Contact
