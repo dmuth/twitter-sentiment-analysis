@@ -21,7 +21,7 @@ services:
       # However, DO NOT ENCLOSE THE STRING IN QUOTES.  It will cause problems running the script if you do.
       #
       - STRING=%%SEARCH%%
-      - TZ=EST5EDT
+      #- TZ=EST5EDT
       - NUM=5000
       - LOOP_SECONDS=60
       #
@@ -41,7 +41,7 @@ services:
     volumes:
       - .:/mnt
     environment:
-      - TZ=EST5EDT
+      #- TZ=EST5EDT
       - NUM=500
       - LOOP_SECONDS=60
       #- FAKE=1 # Set to fake doing analysis on tweets
@@ -56,7 +56,7 @@ services:
     volumes:
       - .:/mnt
     environment:
-      - TZ=EST5EDT
+      #- TZ=EST5EDT
       #
       # This agent name will be written to the logs that are then fed into Splunk.
       #
@@ -76,7 +76,7 @@ services:
     volumes:
       - .:/mnt
     environment:
-      - TZ=EST5EDT
+      #- TZ=EST5EDT
       #
       # A word of caution: the S3 base path *MUST* end in a slash.  This is because
       # slashes in S3 aren't really directory separators, but just part of the key, and
