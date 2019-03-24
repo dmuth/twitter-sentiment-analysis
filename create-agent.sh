@@ -108,6 +108,30 @@ do
 done
 
 echo "#"
+echo "# Agent setup complete!"
+echo "#"
+
+cd $NAME
+echo "# Checking for config.ini..."
+if test ! -f "config.ini"
+then
+	echo "> "
+	echo "> Looks like your config.ini file isn't set up--be sure to go"
+	echo "> into this directory and run the following:"
+	echo "> "
+	echo "> docker build -f ./Dockerfile-0-get-twitter-credentials -t 0-get-twitter-credentials . && docker run -v \$(pwd):/mnt -it 0-get-twitter-credentials"
+	echo "> "
+fi
+
+echo "# Checking for aws-credentials.txt..."
+if test ! -f "aws-credentials.txt"
+then
+	echo "> "
+	echo "> Looks like aws-credentials.txt isn't there, be sure to add it in"
+	echo "> so that backups can be made."
+	echo "> "
+fi
 
 echo "# Done!"
+
 
