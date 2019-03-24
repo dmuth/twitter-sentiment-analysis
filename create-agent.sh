@@ -65,13 +65,17 @@ ln -sf ../../docker/Dockerfile-4-backup .
 echo "# "
 echo "# Symlinking bin directory..."
 echo "# "
-ls -l
 ln -sf ../../bin/ ./bin
 
 echo "# "
 echo "# Symlinking logs directory..."
 echo "# "
 ln -sf ../../logs/${NAME} logs
+
+echo "# "
+echo "# Symlinking in Python logging config..."
+echo "# "
+ln -sf ../../logging_config.ini .
 
 echo "# "
 echo "# Writing docker-compose.yml..."
