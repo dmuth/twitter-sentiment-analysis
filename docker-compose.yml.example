@@ -3,76 +3,10 @@ version: "3"
 
 services:
 
-  twitter-1-fetch-tweets:
+  4-splunk:
     build:
       context: .
-      dockerfile: "Dockerfile-1-fetch-tweets"
-    restart: "always"
-    privileged: true
-    volumes:
-      - ./..:/mnt
-    environment:
-      #
-      # "linux" is a good default search string, as there is regular Twitter activity on that term.
-      #
-      #
-      # If you want to search for multiple strings, they should be separateed by a comma.
-      # Spaces in a term are even fine!  
-      #
-      # e.g. linux,redhat,red hat
-      #
-      # However, DO NOT ENCLOSE THE STRING IN QUOTES.  It will cause problems running the script if you do.
-      #
-      - STRING=linux
-      #- STRING=linux,redhat,red hat
-      - TZ=EST5EDT
-      #
-      # We set this to a really high number to start with, because on the 
-      # first pass, many tweets might be fetched.
-      #
-      - NUM=5000
-      - LOOP_SECONDS=60
-      #
-      # RESULT_TYPE can be "mixed", "recent", or "popular", with a default to "mixed".
-      # Curiously enough, when I did tests before Anthrocon 2018, "mixed" returned 3550 tweets
-      # while "popular" returned only 3387 tweets.
-      #
-      - RESULT_TYPE=mixed
-      - DEBUG=1 # Set to print output in the foreground
-
-  twitter-2-analyze-tweets:
-    build:
-      context: .
-      dockerfile: "Dockerfile-2-analyze-tweets"
-    restart: "always"
-    privileged: true
-    volumes:
-      - ./..:/mnt
-    environment:
-      - TZ=EST5EDT
-      - NUM=500
-      - LOOP_SECONDS=60
-      #- FAKE=1 # Set to fake doing analysis on tweets
-      - DEBUG=1 # Set to print output in the foreground
-   
-  twitter-3-export-tweets:
-    build:
-      context: .
-      dockerfile: "Dockerfile-3-export-tweets"
-    restart: "always"
-    privileged: true
-    volumes:
-      - ./..:/mnt
-    environment:
-      - TZ=EST5EDT
-      - NUM=1000
-      - LOOP_SECONDS=10
-      - DEBUG=1 # Set to print output in the foreground
-    
-  twitter-4-splunk:
-    build:
-      context: .
-      dockerfile: "Dockerfile-4-splunk"
+      dockerfile: "docker/Dockerfile-4-splunk"
     restart: "always"
     privileged: true
     volumes:
@@ -84,32 +18,12 @@ services:
       #
       # Our Splunk logs
       #
-      - ./../logs:/var/log/twitter-sentiment-analysis
+      - ./logs:/logs
       - ./../splunk-data/tweets:/opt/splunk/var/lib/splunk/defaultdb
       - ./../splunk-data/fishbucket:/opt/splunk/var/lib/splunk/fishbucket
     ports:
       - 8000:8000
-    environment:
-      - TZ=EST5EDT
-
-  twitter-4-backup:
-    build:
-      context: .
-      dockerfile: "Dockerfile-4-backup"
-    restart: "always"
-    privileged: true
-    volumes:
-      - ./..:/mnt
-    environment:
-      - TZ=EST5EDT
-      #
-      # A word of caution: the S3 base path *MUST* end in a slash.  This is because
-      # slashes in S3 aren't really directory separators, but just part of the key, and
-      # that means S3 is quite unforgiving if there is no trailing slash or two slashes next to each other.
-      #
-      - S3=s3://my-tweets-FIXME/
-      - NUM_TO_KEEP=50
-      #- DEBUG=1 # Set to print output in the foreground
-
+    #environment:
+    #  - TZ=EST5EDT
 
 
