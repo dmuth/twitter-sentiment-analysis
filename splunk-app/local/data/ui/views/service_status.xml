@@ -17,17 +17,28 @@
       <choice value="1d">1 Day</choice>
       <default>5m</default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+
   </fieldset>
   <row>
     <panel>
       <title>Number of Runs By Service</title>
       <chart>
         <search>
-          <query>index=main ok=1 
-| replace 1-tweets-fetch-stderr with "Tweets: Fetch" in sourcetype
-| replace 2-tweets-analyze-stderr with "Tweets: Analyze" in sourcetype
-| replace 3-tweets-export-stderr with "Tweets: Export" in sourcetype
-| replace 4-tweets-backups-log with "Tweets: Backup" in sourcetype
+          <query>index=main ok=1 sorucetype="*-$agent$"
+| replace 1-tweets-fetch-stderr-$agent$ with "Tweets: Fetch" in sourcetype
+| replace 2-tweets-analyze-stderr-$agent$ with "Tweets: Analyze" in sourcetype
+| replace 3-tweets-export-stderr-$agent$ with "Tweets: Export" in sourcetype
+| replace 4-tweets-backups-log-$agent$ with "Tweets: Backup" in sourcetype
 | timechart span=$span$ count by sourcetype</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
@@ -73,7 +84,7 @@
       <title>Tweets Downloaded</title>
       <chart>
         <search>
-          <query>index=main sourcetype="1-tweets-fetch-stderr" |timechart span=$span$ sum(total_tweets_written_to_db) AS "Tweets Saved" sum(tweets_skiped_because_they_were_rts) AS "RTs Skipped"</query>
+          <query>index=main sourcetype="1-tweets-fetch-stderr-$agent$" | timechart span=$span$ sum(total_tweets_written_to_db) AS "Tweets Saved" sum(tweets_skiped_because_they_were_rts) AS "RTs Skipped"</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -116,7 +127,7 @@
       <title>Number of Tweets Analyzed by AWS Comphrehend</title>
       <chart>
         <search>
-          <query>index=main sourcetype="2-tweets-analyze-stderr" |timechart span=$span$ sum(total_tweets_analyzed) AS "Tweets Analyzed"</query>
+          <query>index=main sourcetype="2-tweets-analyze-stderr-$agent$" |timechart span=$span$ sum(total_tweets_analyzed) AS "Tweets Analyzed"</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -162,7 +173,7 @@
       <title>AWS Comprehend Cost</title>
       <chart>
         <search>
-          <query>index=main sourcetype="2-tweets-analyze-stderr" |timechart span=$span$ sum(total_aws_cost) AS "AWS Cost"</query>
+          <query>index=main sourcetype="2-tweets-analyze-stderr-$agent$" |timechart span=$span$ sum(total_aws_cost) AS "AWS Cost"</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -205,7 +216,7 @@
       <title>Total AWS Comprehend Cost</title>
       <single>
         <search>
-          <query>index=main sourcetype="2-tweets-analyze-stderr" |stats  sum(total_aws_cost) AS "AWS Cost"</query>
+          <query>index=main sourcetype="2-tweets-analyze-stderr-$agent$" |stats  sum(total_aws_cost) AS "AWS Cost"</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
         </search>
@@ -226,7 +237,7 @@
       <title>Analyzed Tweets Sent To Splunk</title>
       <chart>
         <search>
-          <query>index=main sourcetype="3-tweets-export-stderr" |timechart span=$span$ sum(tweets_export_num) AS "Tweets Sent to Splunk"</query>
+          <query>index=main sourcetype="3-tweets-export-stderr-$agent$" |timechart span=$span$ sum(tweets_export_num) AS "Tweets Sent to Splunk"</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -269,7 +280,7 @@
       <title>Twitter API Limts</title>
       <chart>
         <search>
-          <query>index=main sourcetype="1-tweets-fetch-stderr" |timechart span=$span$ avg(twitter_rate_limit_verify_credentials_left) AS "API: Verify Credentials Left", avg(twitter_search_rate_limit_left) AS "API: Search Left"</query>
+          <query>index=main sourcetype="1-tweets-fetch-stderr-$agent$" |timechart span=$span$ avg(twitter_rate_limit_verify_credentials_left) AS "API: Verify Credentials Left", avg(twitter_search_rate_limit_left) AS "API: Search Left"</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>

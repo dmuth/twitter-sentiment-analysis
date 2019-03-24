@@ -38,13 +38,23 @@
       <choice value="500">500</choice>
       <default>200</default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
   </fieldset>
   <row>
     <panel>
       <viz type="wordcloud_app.wordcloud">
         <title>All Tweets</title>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | eval words=split(tweet," ") 
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | eval words=split(tweet," ") 
 | stats count by words 
 | search NOT (words="with" OR words="at" OR words="from" OR words="into" OR words="during" OR words="including" OR words="until" OR words="against" OR words="among" OR words="throughout" OR words="despite" OR words="towards" OR words="upon" OR words="concerning" OR words="about" OR words="like" OR words="through" OR words="over" OR words="before" OR words="between" OR words="after" OR words="since" OR words="without" OR words="under" OR words="within" OR words="along" OR words="following" OR words="across" OR words="behind" OR words="beyond" OR words="plus" OR words="except" OR words="around" OR words="down" OR words="above") 
 | search NOT (words="this" OR words="that" )

@@ -102,18 +102,6 @@
         <option name="useColors">1</option>
       </single>
     </panel>
-    <panel>
-      <title>Oldest Tweet</title>
-      <single>
-        <search>
-          <query>index=main sourcetype="3-tweets-export-log" | tail 1 | reltime | table reltime | rename reltime to Date</query>
-          <earliest>0</earliest>
-          <latest></latest>
-        </search>
-        <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
-      </single>
-    </panel>
   </row>
   <row>
     <panel>

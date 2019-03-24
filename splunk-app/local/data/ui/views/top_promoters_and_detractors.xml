@@ -14,13 +14,23 @@
       <choice value="| where confidence &gt;= 60">Yes</choice>
       <default></default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
   </fieldset>
   <row>
     <panel>
       <title>Top Promoters</title>
       <table>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" sentiment=POSITIVE |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  $high$ | stats count(username) AS count by username |sort -count |head 20 |rename username AS Username, count AS Count</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" sentiment=POSITIVE |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  $high$ | stats count(username) AS count by username |sort -count |head 20 |rename username AS Username, count AS Count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -39,7 +49,7 @@
       <title>Top Detractors</title>
       <table>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" sentiment=NEGATIVE |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  $high$ | stats count(username) AS count by username |sort -count |head 20 |rename username AS Username, count AS Count</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" sentiment=NEGATIVE |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  $high$ | stats count(username) AS count by username |sort -count |head 20 |rename username AS Username, count AS Count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>

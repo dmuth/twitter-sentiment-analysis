@@ -8,13 +8,23 @@
         <latest></latest>
       </default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
   </fieldset>
   <row>
     <panel>
       <title>Number of Tweets</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | stats count</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | stats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -31,7 +41,7 @@
       <title>Earliest Tweet</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | tail 1 | convert timeformat="%b %d, %Y %H:%M:%S" ctime(_time) AS Date | table Date</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | tail 1 | convert timeformat="%b %d, %Y %H:%M:%S" ctime(_time) AS Date | table Date</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -44,7 +54,7 @@
       <title>Latest Tweet</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | head 1 | fields _time  | convert timeformat="%b %d, %Y %H:%M:%S" ctime(_time) AS Date | table Date</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | head 1 | fields _time  | convert timeformat="%b %d, %Y %H:%M:%S" ctime(_time) AS Date | table Date</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -59,7 +69,7 @@
       <title>Earliest Tweet</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | tail 1 | reltime | table reltime |rename reltime to Date</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | tail 1 | reltime | table reltime |rename reltime to Date</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -72,7 +82,7 @@
       <title>Latest Tweet</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | head 1 | reltime | table reltime | rename reltime to Date</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | head 1 | reltime | table reltime | rename reltime to Date</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>

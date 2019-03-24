@@ -36,12 +36,23 @@
       <choice value="| where confidence &gt;= 60">Yes</choice>
       <default></default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+
   </fieldset>
   <row>
     <panel>
       <chart>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" tweet=*$tweet_contains$* | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE", "MIXED")  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | timechart span=$span$ count(sentiment)  by sentiment</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" tweet=*$tweet_contains$* | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE", "MIXED")  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | timechart span=$span$ count(sentiment)  by sentiment</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -86,7 +97,7 @@
       <title>Total Tweets</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" sentiment=* tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" sentiment=* tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -100,7 +111,7 @@
       <title>Positive Tweets</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" sentiment=POSITIVE tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" sentiment=POSITIVE tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -116,7 +127,7 @@
       <title>Negative Tweets</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" sentiment=NEGATIVE tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" sentiment=NEGATIVE tweet=*$tweet_contains$*  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ |stats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -134,7 +145,7 @@
       <title>Recent Positive Tweets</title>
       <table>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" sentiment=POSITIVE tweet=*$tweet_contains$*  | reltime  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | head 10 | table reltime username confidence tweet | rename Reltime AS "Time Ago", username AS Username, confidence AS Confidence, tweet AS Tweet</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" sentiment=POSITIVE tweet=*$tweet_contains$*  | reltime  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | head 10 | table reltime username confidence tweet | rename Reltime AS "Time Ago", username AS Username, confidence AS Confidence, tweet AS Tweet</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -146,7 +157,7 @@
       <title>Recent Negative Tweets</title>
       <table>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" sentiment=NEGATIVE tweet=*$tweet_contains$* |reltime  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | head 10 | table reltime username confidence tweet | rename Reltime AS "Time Ago", username AS Username, confidence AS Confidence, tweet AS Tweet</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" sentiment=NEGATIVE tweet=*$tweet_contains$* |reltime  | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | head 10 | table reltime username confidence tweet | rename Reltime AS "Time Ago", username AS Username, confidence AS Confidence, tweet AS Tweet</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>

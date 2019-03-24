@@ -35,12 +35,22 @@
       <choice value="| where confidence &gt;= 60">Yes</choice>
       <default></default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
   </fieldset>
   <row>
     <panel>
       <chart>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" tweet=*$tweet_contains$* 
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" tweet=*$tweet_contains$* 
 | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ 
 | timechart span=$span$ count(sentiment)  by sentiment | addtotals 
 | eval pct_positive = round(POSITIVE/Total*100, 2) | eval pct_negative = round(NEGATIVE/Total*100, 2) | eval net=pct_positive - pct_negative 

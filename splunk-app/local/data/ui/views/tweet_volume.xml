@@ -19,13 +19,23 @@
       <choice value="1d">1 Day</choice>
       <default>1h</default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
   </fieldset>
   <row>
     <panel>
       <title>Volume Over Time</title>
       <chart>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | timechart span=$span$ count</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | timechart span=$span$ count</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -73,7 +83,7 @@
       <title>Highest Tweet Volume per Hour</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | timechart span=1h count | sort -count |head 1</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | timechart span=1h count | sort -count |head 1</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -91,7 +101,7 @@
       <title>Hourly Rate</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | stats count | addinfo | eval timespan=info_max_time-info_min_time | eval num_hours=timespan/3600 | eval hourly_rate=count/num_hours  | fields hourly_rate</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | stats count | addinfo | eval timespan=info_max_time-info_min_time | eval num_hours=timespan/3600 | eval hourly_rate=count/num_hours  | fields hourly_rate</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -120,7 +130,7 @@
       <title>Daily Rate</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" | stats count | addinfo | eval timespan=info_max_time-info_min_time | eval num_days=timespan/86400 | eval daily_rate=count/num_days  | fields daily_rate</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" | stats count | addinfo | eval timespan=info_max_time-info_min_time | eval num_days=timespan/86400 | eval daily_rate=count/num_days  | fields daily_rate</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>

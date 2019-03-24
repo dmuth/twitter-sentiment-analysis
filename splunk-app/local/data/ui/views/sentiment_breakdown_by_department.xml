@@ -36,13 +36,24 @@
       <choice value="| where confidence &gt;= 60">Yes</choice>
       <default></default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+
   </fieldset>
   <row>
     <panel>
       <title>Sentiment Over Time by Percentage /w/ Tweet Volume Overlaid</title>
       <chart>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" tweet="*$tweet_contains$*" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE")  | timechart span=$span$ count(sentiment)  by sentiment | addtotals |rename Total as "Total Tweets"</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" tweet="*$tweet_contains$*" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE")  | timechart span=$span$ count(sentiment)  by sentiment | addtotals |rename Total as "Total Tweets"</query>
           <earliest>$time.earliest$</earliest>
           <latest>$time.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -90,7 +101,7 @@
       <title>Positive Sentiment</title>
       <table>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
 | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE") 
 | search sentiment=POSITIVE
 | eval keyword=case(
@@ -151,7 +162,7 @@
       <title>Neutral Sentiment</title>
       <table>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
 | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE") 
 | search sentiment=NEUTRAL
 | eval keyword=case(
@@ -211,7 +222,7 @@
       <title>Negative Sentiment</title>
       <table>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" tweet="***" | eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  
 | where in (sentiment, "POSITIVE", "NEUTRAL", "NEGATIVE") 
 | search sentiment=NEGATIVE
 | eval keyword=case(

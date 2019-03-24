@@ -1,7 +1,7 @@
 <form>
   <label>Export Tweets</label>
   <search>
-    <query>index=main sourcetype="3-tweets-export-log" username=$username$ profile_image=* | head 1</query>
+    <query>index=main sourcetype="3-tweets-export-log-$agent$" username=$username$ profile_image=* | head 1</query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>
     <!-- Use the following search events to access job properties, and set tokens that can be accessible throughout the page -->
@@ -39,13 +39,23 @@
       <choice value="NEGATIVE">Negative</choice>
       <default>*</default>
     </input>
+    <input type="dropdown" token="agent" searchWhenChanged="true">
+      <label>agent</label>
+      <fieldForLabel>agent</fieldForLabel>
+      <fieldForValue>agent</fieldForValue>
+      <search>
+        <query>index=main |dedup agent | table agent |sort agent</query>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
   </fieldset>
   <row>
     <panel>
       <title>Total Tweets</title>
       <single>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" tweet=*$tweet$* sentiment=$sentiment$ |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | stats count|</query>
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" tweet=*$tweet$* sentiment=$sentiment$ |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2) $high$ | stats count|</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -61,7 +71,7 @@
       <title>Tweets</title>
       <table>
         <search>
-          <query>index=main sourcetype="3-tweets-export-log" tweet=*$tweet$* sentiment=$sentiment$
+          <query>index=main sourcetype="3-tweets-export-log-$agent$" tweet=*$tweet$* sentiment=$sentiment$
 |eval confidence = round(case(sentiment=="POSITIVE", score_positive, sentiment=="NEGATIVE", score_negative, sentiment=="MIXED", score_mixed, sentiment=="NEUTRAL", score_neutral) * 100, 2)  $high$ 
 | eval confidence_text = confidence . "%" 
 | table _time, username, url, sentiment, confidence_text, tweet 
