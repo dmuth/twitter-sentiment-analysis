@@ -37,4 +37,8 @@ docker-compose.yml
 #
 splunk-config/passwd
 
+#
+# Ignore our agents
+#
+agents/
 
