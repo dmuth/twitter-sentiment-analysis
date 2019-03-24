@@ -1,0 +1,87 @@
+
+version: "3"
+
+services:
+
+  1-fetch-tweets:
+    build:
+      context: .
+      dockerfile: "Dockerfile-1-fetch-tweets"
+    restart: "always"
+    privileged: true
+    volumes:
+      - .:/mnt
+    environment:
+      #
+      # If you want to search for multiple strings, they should be separateed by a comma.
+      # Spaces in a term are even fine!  
+      #
+      # e.g. linux,redhat,red hat
+      #
+      # However, DO NOT ENCLOSE THE STRING IN QUOTES.  It will cause problems running the script if you do.
+      #
+      - STRING=%%SEARCH%%
+      - TZ=EST5EDT
+      - NUM=5000
+      - LOOP_SECONDS=60
+      #
+      # RESULT_TYPE can be "mixed", "recent", or "popular", with a default to "mixed".
+      # Curiously enough, when I did tests before Anthrocon 2018, "mixed" returned 3550 tweets
+      # while "popular" returned only 3387 tweets.
+      #
+      - RESULT_TYPE=mixed
+      #- DEBUG=1 # Set to print output in the foreground
+
+  2-analyze-tweets:
+    build:
+      context: .
+      dockerfile: "Dockerfile-2-analyze-tweets"
+    restart: "always"
+    privileged: true
+    volumes:
+      - .:/mnt
+    environment:
+      - TZ=EST5EDT
+      - NUM=500
+      - LOOP_SECONDS=60
+      #- FAKE=1 # Set to fake doing analysis on tweets
+      #- DEBUG=1 # Set to print output in the foreground
+   
+  3-export-tweets:
+    build:
+      context: .
+      dockerfile: "Dockerfile-3-export-tweets"
+    restart: "always"
+    privileged: true
+    volumes:
+      - .:/mnt
+    environment:
+      - TZ=EST5EDT
+      #- NUM=1000
+      #- LOOP_SECONDS=10
+      - NUM=5000
+      - LOOP_SECONDS=5
+      #- DEBUG=1 # Set to print output in the foreground
+    
+  4-backup:
+    build:
+      context: .
+      dockerfile: "Dockerfile-4-backup"
+    restart: "always"
+    privileged: true
+    volumes:
+      - .:/mnt
+    environment:
+      - TZ=EST5EDT
+      #
+      # A word of caution: the S3 base path *MUST* end in a slash.  This is because
+      # slashes in S3 aren't really directory separators, but just part of the key, and
+      # that means S3 is quite unforgiving if there is no trailing slash or two slashes next to each other.
+      #
+      - S3=%%S3%%
+      - NUM_TO_KEEP=20
+      #- LOOP_SECONDS=10
+      #- DEBUG=1 # Set to print output in the foreground
+
+
+
