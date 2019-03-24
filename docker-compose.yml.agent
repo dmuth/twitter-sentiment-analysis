@@ -57,6 +57,10 @@ services:
       - .:/mnt
     environment:
       - TZ=EST5EDT
+      #
+      # This agent name will be written to the logs that are then fed into Splunk.
+      #
+      - AGENT=%%NAME%%
       #- NUM=1000
       #- LOOP_SECONDS=10
       - NUM=5000

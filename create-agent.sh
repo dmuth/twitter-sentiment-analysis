@@ -71,7 +71,7 @@ echo "# "
 echo "# Writing docker-compose.yml..."
 echo "# "
 cat ../../docker-compose.yml.agent \
-	| sed -e "s/%%SEARCH%%/${SEARCH}/" -e "s#%%S3%%#${S3}#" \
+	| sed -e "s/%%SEARCH%%/${SEARCH}/" -e "s#%%S3%%#${S3}#" -e "s/%%AGENT%%/${NAME}/" \
 	> docker-compose.yml
 
 echo "# Done!"
