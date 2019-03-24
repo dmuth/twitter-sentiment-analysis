@@ -120,14 +120,17 @@ Here, try these commands:
 - `export C="1-fetch-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
 - `export C="2-analyze-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
 - `export C="3-export-tweets"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
-- `export C="4-splunk"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
 - `export C="4-backup"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
+- `export C="4-splunk"; docker-compose kill $C && docker-compose rm -f $C && docker-compose build $C && docker-compose run $C bash`
 
 
 ### Resetting The App
 
-Run `./bin/stop-and-reset` to kill and remove all services and remove all logs files. The data in the
-database will remain untouched.
+Run `./bin/stop-and-reset-agent` to kill and remove all services and remove all 
+logs files in the agent. The data in the database will remain untouched.
+
+Run `./bin/stop-and-reset-splunk` to kill and remove Splunk and its data.
+The underlying logfiles will remain untouched.
 
 
 ## Known Issues
