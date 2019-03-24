@@ -21,12 +21,6 @@ echo "# "
 docker-compose kill
 docker-compose rm -f
 
-
-echo "# "
-echo "# Removing Splunk data..."
-echo "# "
-rm -rfv splunk-data
-
 echo "# "
 echo "# Removing logs..."
 echo "# "
@@ -35,7 +29,7 @@ rm -rfv logs/*.log logs/*.stderr
 
 echo "# "
 echo "# All done!  When you are ready to restart things, I recommend "
-echo "# resetting the exported flag in the databsae before restarting: "
+echo "# resetting the exported flag in the database before restarting: "
 echo "# "
 echo "# echo \"UPDATE tweets SET exported='';\" | sqlite3 ./tweets.db"
 echo "# docker-compose up -d"

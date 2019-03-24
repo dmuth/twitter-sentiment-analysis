@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# This script stops all containers and removes all data
+#
+
+
+# Errors are fatal
+set -e
+
+#
+# Change to our script directory, then Docker
+#
+pushd $(dirname $0)
+cd ..
+
+
+echo "# "
+echo "# Killing and removing Splunk..."
+echo "# "
+
+docker-compose kill
+docker-compose rm -f
+
+
+echo "# "
+echo "# Removing Splunk data..."
+echo "# "
+rm -rfv splunk-data
+
+
