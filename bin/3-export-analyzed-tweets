@@ -8,6 +8,7 @@ import argparse
 import json
 import logging as logger
 import logging.config
+import os
 import socket
 import sqlite3
 import sys
@@ -42,6 +43,7 @@ def getTweetString(tweet):
 	retval += " tweet_id=\"%d\"" % tweet["tweet_id"]
 	retval += " profile_image=\"%s\"" % tweet["profile_image"]
 	retval += " url=\"%s\"" % tweet["url"]
+	retval += " agent=\"%s\"" % os.environ["AGENT"]
 
 	#
 	# Replace newlines with spaces, Splunk strongly prefers to have one event per line
