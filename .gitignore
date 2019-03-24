@@ -47,4 +47,10 @@ agents/
 #
 splunk-app/default/inputs.conf
 
+#
+# No idea why my symlink is creating *this*, I'll just keep 
+# it out of Git for now...
+#
+bin/bin
+
 
