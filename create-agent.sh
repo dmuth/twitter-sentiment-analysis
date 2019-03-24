@@ -65,7 +65,8 @@ ln -sf ../../docker/Dockerfile-4-backup .
 echo "# "
 echo "# Symlinking bin directory..."
 echo "# "
-ln -sf ../../bin bin
+ls -l
+ln -sf ../../bin/ ./bin
 
 echo "# "
 echo "# Symlinking logs directory..."
