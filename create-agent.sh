@@ -42,10 +42,13 @@ then
 fi
 
 echo "# "
+echo "# Creating/updating agent '${NAME}'..."
+echo "# "
+
+echo "# "
 echo "# Creating our directories..."
 echo "# "
 mkdir -p agents/${NAME}
-mkdir -p logs/${NAME}
 
 echo "# "
 echo "# cding to agents/${NAME}..."
@@ -53,29 +56,41 @@ echo "# "
 cd agents/${NAME}
 
 
-echo "# "
-echo "# Symlinking Dockerfiles..."
-echo "# "
-ln -sf ../../docker/Dockerfile-0-get-twitter-credentials .
-ln -sf ../../docker/Dockerfile-1-fetch-tweets .
-ln -sf ../../docker/Dockerfile-2-analyze-tweets .
-ln -sf ../../docker/Dockerfile-3-export-tweets .
-ln -sf ../../docker/Dockerfile-4-backup .
+#
+# These are all copied in because Docker doesn't like
+# symlinks outside of if its root.
+#
 
 echo "# "
-echo "# Symlinking bin directory..."
+echo "# Copying in Dockerfiles..."
 echo "# "
-ln -sf ../../bin/ ./bin
+cp ../../docker/Dockerfile-0-get-twitter-credentials .
+cp ../../docker/Dockerfile-1-fetch-tweets .
+cp ../../docker/Dockerfile-2-analyze-tweets .
+cp ../../docker/Dockerfile-3-export-tweets .
+cp ../../docker/Dockerfile-4-backup .
+
 
 echo "# "
-echo "# Symlinking logs directory..."
+echo "# Copying in contents of bin/ directory"
 echo "# "
-ln -sf ../../logs/${NAME} logs
+mkdir -p bin
+cp -r ../../bin/ ./bin
 
 echo "# "
-echo "# Symlinking in Python logging config..."
+echo "# Making logs directory..."
 echo "# "
-ln -sf ../../logging_config.ini .
+mkdir -p logs
+
+echo "# "
+echo "# Copying in Python logging config..."
+echo "# "
+cp ../../logging_config.ini .
+
+echo "# "
+echo "# Copying in requirements.txt..."
+echo "# "
+cp ../../requirements.txt .
 
 echo "# "
 echo "# Writing docker-compose.yml..."
