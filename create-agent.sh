@@ -93,6 +93,11 @@ echo "# "
 cp ../../requirements.txt .
 
 echo "# "
+echo "# Copying in lib/..."
+echo "# "
+cp -r ../../lib/ ./lib
+
+echo "# "
 echo "# Writing docker-compose.yml..."
 echo "# "
 cat ../../docker-compose.yml.agent \
