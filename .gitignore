@@ -42,3 +42,9 @@ splunk-config/passwd
 #
 agents/
 
+#
+# This is machine-generated
+#
+splunk-app/default/inputs.conf
+
+

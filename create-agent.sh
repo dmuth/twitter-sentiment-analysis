@@ -56,14 +56,19 @@ cd agents/${NAME}
 echo "# "
 echo "# Symlinking Dockerfiles..."
 echo "# "
-ln -sf ../../Dockerfile-0-get-twitter-credentials .
-ln -sf ../../Dockerfile-1-fetch-tweets .
-ln -sf ../../Dockerfile-2-analyze-tweets .
-ln -sf ../../Dockerfile-3-export-tweets .
-ln -sf ../../Dockerfile-4-backup .
+ln -sf ../../docker/Dockerfile-0-get-twitter-credentials .
+ln -sf ../../docker/Dockerfile-1-fetch-tweets .
+ln -sf ../../docker/Dockerfile-2-analyze-tweets .
+ln -sf ../../docker/Dockerfile-3-export-tweets .
+ln -sf ../../docker/Dockerfile-4-backup .
 
 echo "# "
-echo "# Smylinking logs directory..."
+echo "# Symlinking bin directory..."
+echo "# "
+ln -sf ../../bin bin
+
+echo "# "
+echo "# Symlinking logs directory..."
 echo "# "
 ln -sf ../../logs/${NAME} logs
 
@@ -73,6 +78,31 @@ echo "# "
 cat ../../docker-compose.yml.agent \
 	| sed -e "s/%%SEARCH%%/${SEARCH}/" -e "s#%%S3%%#${S3}#" -e "s/%%AGENT%%/${NAME}/" \
 	> docker-compose.yml
+
+#
+# Change to the main agents directory and loop through each agent 
+#
+cd ..
+
+SPLUNK_DIR=../splunk-app/default
+INPUTS_IN="${SPLUNK_DIR}/inputs.conf.in"
+INPUTS_OUT="${SPLUNK_DIR}/inputs.conf"
+
+echo "# "
+echo "# Removing ${INPUTS_OUT}..."
+echo "# "
+rm -f $INPUTS_OUT
+
+echo "# "
+echo "# Rewriting ${INPUTS_OUT} for each agent..."
+echo "# "
+for AGENT in *
+do
+	echo "# - $AGENT"
+	cat $INPUTS_IN | sed -e "s/%%NAME%%/${AGENT}/" >> $INPUTS_OUT
+done
+
+echo "#"
 
 echo "# Done!"
 
