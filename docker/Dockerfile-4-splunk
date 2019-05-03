@@ -44,12 +44,28 @@ COPY splunk-config/user-prefs.conf /opt/splunk/etc/apps/user-prefs/local/user-pr
 COPY splunk-config/web.conf /opt/splunk/etc/system/local/web.conf.in
 
 #
-# Install Wordcloud and remove "splunk>" when "feeling fun".
+# Start installing our external apps
 #
-COPY splunk-app/wordcloud-custom-visualization_111.tgz /tmp/
 WORKDIR /tmp
-RUN tar xfvz /tmp/wordcloud-custom-visualization_111.tgz 2>/dev/null \
-	&& mv /tmp/wordcloud_app /opt/splunk/etc/apps/wordcloud_app/ 
+RUN apt-get install -y wget
+
+#
+# Install Wordcloud app
+# https://splunkbase.splunk.com/app/3212/
+#
+RUN wget https://s3.amazonaws.com/dmuth-splunk-lab/wordcloud-custom-visualization_111.tgz
+RUN tar xfvz wordcloud-custom-visualization_111.tgz
+RUN mv wordcloud_app /opt/splunk/etc/apps/
+RUN rm -fv /tmp/wordcloud-custom-visualization_111.tgz
+
+#
+# Install Slack Notification Alert
+# https://splunkbase.splunk.com/app/2878/
+#
+RUN wget https://s3.amazonaws.com/dmuth-splunk-lab/slack-notification-alert_203.tgz
+RUN tar xfvz slack-notification-alert_203.tgz
+RUN mv slack_alerts /opt/splunk/etc/apps/
+RUN rm -fv /tmp/slack-notification-alert_203.tgz
 
 
 #

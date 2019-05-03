@@ -182,9 +182,17 @@ running.  This means that all Tweets will eventually make it into Splunk, but th
 if a lot of tweets are being processed.
 
 
-## Credits
+## Splunk Apps Included
 
-- Tag clouds in Splunk are created with the awesome Wordcloud app, available at <a href="https://splunkbase.splunk.com/app/3212">https://splunkbase.splunk.com/app/3212</a>
+The following Splunk apps are included in this Docker image:
+
+- <a href="https://splunkbase.splunk.com/app/3212/">Wordcloud Custom Visualization</a>
+- <a href="https://splunkbase.splunk.com/app/2878/">Slack Notification Alert</a>
+
+All apps are covered under their own license.
+
+Splunk has its own license.  Please abide by it.
+
 
 
 ## TODO
