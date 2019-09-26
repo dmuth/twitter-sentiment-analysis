@@ -5,7 +5,7 @@ This app makes use of Twitter's API and AWS Comprehend to get insights about you
 city, event, or convention by way of analyzing tweet sentiment.  It further
 allows drilldown by user, topic, and search string.
 
-NOTE: I am sorry at this app is as complex as it's gotten.  This is due to some busines
+NOTE: I am sorry at this app is as complex as it's gotten.  I have a refactoring effort all planned out, I just need some 36-hour days in which to pull it off. :-)
 
 
 ## Requirements
